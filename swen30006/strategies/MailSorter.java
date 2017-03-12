@@ -1,7 +1,11 @@
 package strategies;
 
 import automail.*;
+
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+
+import com.sun.xml.internal.rngom.dt.builtin.BuiltinDatatypeLibrary;
 import com.sun.xml.internal.ws.api.pipe.Tube;
 import exceptions.TubeFullException;
 
@@ -15,13 +19,15 @@ import java.util.PriorityQueue;
 public class MailSorter implements IMailSorter{
 
     MailPool MailPool;
+    private int maxFloorDifferenceUp;
+    private int maxFloorDifferenceDown;
     private int maxFloorDifference;
     public MailSorter(MailPool MailPool) {
         this.MailPool = MailPool;
-        this.maxFloorDifference = (Building.FLOORS - Building.MAILROOM_LOCATION)>
-                                    (Building.MAILROOM_LOCATION - Building.LOWEST_FLOOR)?
-                                    (Building.FLOORS - Building.MAILROOM_LOCATION):
-                                    (Building.MAILROOM_LOCATION - Building.LOWEST_FLOOR);
+        this.maxFloorDifferenceUp = (Building.FLOORS - Building.MAILROOM_LOCATION);
+        this.maxFloorDifferenceDown = (Building.MAILROOM_LOCATION - Building.LOWEST_FLOOR);
+        this.maxFloorDifference = maxFloorDifferenceDown>maxFloorDifferenceUp?maxFloorDifferenceDown:maxFloorDifferenceUp;
+
     }
     /**
      * Fills the storage tube
@@ -31,7 +37,9 @@ public class MailSorter implements IMailSorter{
 
         System.out.println("Hello running at " + Clock.Time());
 
-        int floorDifference = 0;
+        int floorDifferenceUp = 0;
+        int floorDifferenceDown = 1;
+
         int count = 0;
 
 
@@ -42,24 +50,27 @@ public class MailSorter implements IMailSorter{
 
         addToTube:
         while(!(tube.getTotalOfSizes() == tube.MAXIMUM_CAPACITY)  && count <= this.maxFloorDifference) {
-            int floorAbove = Building.MAILROOM_LOCATION + floorDifference;
-            int floorBelow = Building.MAILROOM_LOCATION - floorDifference;
+            int floorAbove = Building.MAILROOM_LOCATION + floorDifferenceUp;
+            int floorBelow = Building.LOWEST_FLOOR + floorDifferenceDown;
             PriorityQueue<MailItem> itemsAbove;
             PriorityQueue<MailItem> itemsBelow;
             System.out.println("Running with floorAbove = " + floorAbove + " and floorBelow = " + floorBelow);
-            if(floorAbove <= Building.FLOORS)
-            {
-                if ((itemsAbove = MailPool.getFloorMail(floorAbove)) != null && itemsAbove.size() != 0)
-                {
+            if(floorAbove <= Building.FLOORS) {
+                if ((itemsAbove = MailPool.getFloorMail(floorAbove)) != null && itemsAbove.size() != 0) {
                     System.out.println("Check out floor " + floorAbove);
-                    try{
+                    try {
                         System.out.println("Adding items from floor above :");
+
                         Iterator<MailItem> iterator = itemsAbove.iterator();
-                        while(iterator.hasNext()) {
-                            MailItem mi = iterator.next();
+                        System.out.println(itemsAbove);
+                        while (iterator.hasNext()) {
+                            MailItem mi;
+                            System.out.println("Tube currently has:" + tube.getTotalOfSizes());
+
+                            mi = iterator.next();
                             if ((tube.getTotalOfSizes() + mi.getSize()) <= tube.MAXIMUM_CAPACITY) {
                                 tube.addItem(mi);
-                                MailPool.removeItem(floorAbove, mi);
+                                iterator.remove();
                             }
                             if (tube.getTotalOfSizes() == tube.MAXIMUM_CAPACITY) {
                                 System.out.println("Tube is now full");
@@ -69,12 +80,9 @@ public class MailSorter implements IMailSorter{
                             }
                         }
 
-                    }
-                    catch (TubeFullException e)
-                    {
+                    } catch (TubeFullException e) {
                         return true;
                     }
-
                 }
             }
 
@@ -89,7 +97,7 @@ public class MailSorter implements IMailSorter{
                             if((tube.getTotalOfSizes() + mi.getSize()) <= tube.MAXIMUM_CAPACITY) {
                                 tube.addItem(mi);
                                 System.out.println(mi);
-                                itemsBelow.remove(mi);
+                                iterator.remove();
                             }
                             if(tube.getTotalOfSizes() == tube.MAXIMUM_CAPACITY)
                             {
@@ -105,7 +113,28 @@ public class MailSorter implements IMailSorter{
                 }
             }
             count++;
-            floorDifference ++;
+            if(floorDifferenceUp == maxFloorDifferenceUp)
+            {
+                floorDifferenceUp = 0;
+            }
+            else
+            {
+                floorDifferenceUp++;
+            }
+            if(floorDifferenceDown == maxFloorDifferenceDown)
+            {
+                floorDifferenceDown = 0;
+            }
+            else
+            {
+                floorDifferenceDown++;
+            }
+        }
+
+        if(count >= this.maxFloorDifference && tube.getTotalOfSizes() > 0)
+        {
+            return true;
+
         }
 
 
