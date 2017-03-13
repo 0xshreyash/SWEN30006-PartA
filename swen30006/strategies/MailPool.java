@@ -17,7 +17,6 @@ import automail.IMailPool;
  */
 public class MailPool implements IMailPool {
 
-    /** Stack of mailItems pending delivery*/
     private HashMap<Integer, PriorityQueue<MailItem>> mailItems;
     private Comparator<MailItem> comparator;
     private Integer timeOfLastUpdate[];
@@ -25,8 +24,9 @@ public class MailPool implements IMailPool {
     private static final int DELIVERY_TIME = 1;
 
     public MailPool(){
-        mailItems = new HashMap<>();
+
         comparator = new MailItemComparator();
+        mailItems = new HashMap<>();
         timeOfLastUpdate = new Integer[Building.FLOORS];
         Arrays.fill(timeOfLastUpdate, -1);
     }
@@ -162,18 +162,18 @@ public class MailPool implements IMailPool {
             // Determine the priority_weight
             switch(deliveryItem.getPriorityLevel()) {
                 case "LOW":
-                    priority_weight = 1;
+                    priority_weight = 5;
                     break;
                 case "MEDIUM":
-                    priority_weight = 1.5;
+                    priority_weight = 10;
                     break;
                 case "HIGH":
-                    priority_weight = 2;
+                    priority_weight = 20;
                     break;
             }
 
             return Math.pow((CHANGE_STATE_TIME + (deliveryItem.getDestFloor() - Building.MAILROOM_LOCATION) +
-                    DELIVERY_TIME) + Clock.Time() - deliveryItem.getArrivalTime(),penalty)*priority_weight;
+                    DELIVERY_TIME) + Clock.Time() - deliveryItem.getArrivalTime(), penalty)*priority_weight;
         }
     }
 

@@ -4,6 +4,7 @@ import automail.*;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import com.sun.xml.internal.rngom.dt.builtin.BuiltinDatatypeLibrary;
 import com.sun.xml.internal.ws.api.pipe.Tube;
@@ -22,11 +23,34 @@ public class MailSorter implements IMailSorter{
     private int maxFloorDifferenceUp;
     private int maxFloorDifferenceDown;
     private int maxFloorDifference;
+    private boolean goUp;
+    private boolean goDown;
+
     public MailSorter(MailPool MailPool) {
         this.MailPool = MailPool;
         this.maxFloorDifferenceUp = (Building.FLOORS - Building.MAILROOM_LOCATION);
         this.maxFloorDifferenceDown = (Building.MAILROOM_LOCATION - Building.LOWEST_FLOOR);
-        this.maxFloorDifference = maxFloorDifferenceDown>maxFloorDifferenceUp?maxFloorDifferenceDown:maxFloorDifferenceUp;
+        goUp = false;
+        goDown = false;
+        if(maxFloorDifferenceUp > maxFloorDifferenceDown)
+        {
+            goUp =  true;
+            this.maxFloorDifference = maxFloorDifferenceUp - maxFloorDifferenceDown;
+        }
+        else
+        {
+            goDown = true;
+            this.maxFloorDifference = this.maxFloorDifferenceDown - this.maxFloorDifferenceUp;
+        }
+
+        System.out.println("Go up is:" + goUp + " Go down is:" + goDown);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        }
+        catch(InterruptedException e)
+        {
+        }
+
 
     }
     /**
@@ -49,13 +73,13 @@ public class MailSorter implements IMailSorter{
         }
 
         addToTube:
-        while(!(tube.getTotalOfSizes() == tube.MAXIMUM_CAPACITY)  && count <= this.maxFloorDifference) {
+        while(!(tube.getTotalOfSizes() == tube.MAXIMUM_CAPACITY)  && count <= (this.maxFloorDifferenceUp)) {
             int floorAbove = Building.MAILROOM_LOCATION + floorDifferenceUp;
-            int floorBelow = Building.LOWEST_FLOOR + floorDifferenceDown;
+            int floorBelow = Building.MAILROOM_LOCATION - floorDifferenceDown;
             PriorityQueue<MailItem> itemsAbove;
             PriorityQueue<MailItem> itemsBelow;
             System.out.println("Running with floorAbove = " + floorAbove + " and floorBelow = " + floorBelow);
-            if(floorAbove <= Building.FLOORS) {
+            if(goUp && floorAbove <= Building.FLOORS) {
                 if ((itemsAbove = MailPool.getFloorMail(floorAbove)) != null && itemsAbove.size() != 0) {
                     System.out.println("Check out floor " + floorAbove);
                     try {
@@ -86,7 +110,7 @@ public class MailSorter implements IMailSorter{
                 }
             }
 
-            if(floorBelow >= Building.LOWEST_FLOOR && floorBelow != floorAbove)
+            if(goDown && floorBelow >= Building.LOWEST_FLOOR && floorBelow != floorAbove)
             {
                 if ((itemsBelow = MailPool.getFloorMail(floorBelow)) != null && itemsBelow.size() != 0) {
                     try {
@@ -112,23 +136,29 @@ public class MailSorter implements IMailSorter{
                     }
                 }
             }
-            count++;
-            if(floorDifferenceUp == maxFloorDifferenceUp)
+
+            if(goUp && floorDifferenceUp == maxFloorDifferenceUp)
             {
                 floorDifferenceUp = 0;
+                goUp = false;
+                goDown = true;
             }
-            else
+            else if(goUp)
             {
                 floorDifferenceUp++;
             }
-            if(floorDifferenceDown == maxFloorDifferenceDown)
+            if(goDown && floorDifferenceDown == maxFloorDifferenceDown)
             {
                 floorDifferenceDown = 0;
+                goUp = true;
+                goDown = false;
             }
-            else
+            else if(goDown)
             {
                 floorDifferenceDown++;
             }
+
+            count++;
         }
 
         if(count >= this.maxFloorDifference && tube.getTotalOfSizes() > 0)
