@@ -63,6 +63,7 @@ public class MailSorter implements IMailSorter{
                     values[item][weight] = values[item - 1][weight];
                 }
                 else {
+
                     values[item][weight] = Math.max(values[item - 1][weight],
                             values[item - 1][weight - currentItem.getSize()]
                                     + calculateDeliveryScore(currentItem));
@@ -108,23 +109,30 @@ public class MailSorter implements IMailSorter{
     }
 
     private static double calculateDeliveryScore(MailItem deliveryItem) {
+
+
+
         // Penalty for longer delivery times
         final double penalty = 1.1;
         // Take (delivery time - arrivalTime)**penalty * priority_weight
         double priority_weight = 0;
+        double max_priority = 2;
             // Determine the priority_weight
+
         switch(deliveryItem.getPriorityLevel()) {
             case "LOW":
                 priority_weight = 1;
                 break;
             case "MEDIUM":
-                priority_weight = 1.5;
+                priority_weight = 2;
                 break;
             case "HIGH":
-                priority_weight = 2;
+                priority_weight = 3;
                 break;
         }
 
-        return Math.pow(deliveryItem.getArrivalTime() + 1, penalty)*priority_weight;
+        double score = Math.pow(Clock.Time() - deliveryItem.getArrivalTime() + 1, penalty)*(priority_weight) -
+                Math.abs(deliveryItem.getDestFloor() - Building.MAILROOM_LOCATION)*(max_priority - priority_weight);
+        return score;
     }
 }
