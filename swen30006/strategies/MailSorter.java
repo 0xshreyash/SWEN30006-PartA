@@ -2,6 +2,9 @@ package strategies;
 
 import automail.*;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
@@ -9,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import com.sun.xml.internal.rngom.dt.builtin.BuiltinDatatypeLibrary;
 import com.sun.xml.internal.ws.api.pipe.Tube;
 import exceptions.TubeFullException;
+import sun.misc.ConditionLock;
 
 import java.util.PriorityQueue;
 
@@ -20,38 +24,11 @@ import java.util.PriorityQueue;
 public class MailSorter implements IMailSorter{
 
     MailPool MailPool;
-    private int maxFloorDifferenceUp;
-    private int maxFloorDifferenceDown;
-    private int maxFloorDifference;
-    private boolean goUp;
-    private boolean goDown;
-
+    private static int WAITING_TO_DELIVERY_TIME = 1;
+    private static int DELIVERY_TIME = 1;
     public MailSorter(MailPool MailPool) {
+
         this.MailPool = MailPool;
-        this.maxFloorDifferenceUp = (Building.FLOORS - Building.MAILROOM_LOCATION);
-        this.maxFloorDifferenceDown = (Building.MAILROOM_LOCATION - Building.LOWEST_FLOOR);
-        goUp = false;
-        goDown = false;
-        if(maxFloorDifferenceUp > maxFloorDifferenceDown)
-        {
-            goUp =  true;
-            this.maxFloorDifference = maxFloorDifferenceUp - maxFloorDifferenceDown;
-        }
-        else
-        {
-            goDown = true;
-            this.maxFloorDifference = this.maxFloorDifferenceDown - this.maxFloorDifferenceUp;
-        }
-
-        System.out.println("Go up is:" + goUp + " Go down is:" + goDown);
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        }
-        catch(InterruptedException e)
-        {
-        }
-
-
     }
     /**
      * Fills the storage tube
@@ -59,148 +36,95 @@ public class MailSorter implements IMailSorter{
     @Override
     public boolean fillStorageTube(StorageTube tube) {
 
-        System.out.println("Hello running at " + Clock.Time());
+        System.out.println("Hello! Filling tube at: " + Clock.Time());
 
-        int floorDifferenceUp = 0;
-        int floorDifferenceDown = 1;
+        int maxCapacity = tube.MAXIMUM_CAPACITY;
+        int numItems = MailPool.getLength();
 
-        int count = 0;
+        double values[][]= new double[numItems + 1][maxCapacity + 1];
 
+        for(int col = 0; col < maxCapacity; col++) {
 
-        if(Clock.Time() > Clock.LAST_DELIVERY_TIME)
-        {
-            System.out.println("Over the last delivery time");
+            values[0][col] = 0;
+
         }
 
-        addToTube:
-        while(!(tube.getTotalOfSizes() == tube.MAXIMUM_CAPACITY)  && count <= (this.maxFloorDifferenceUp)) {
-            int floorAbove = Building.MAILROOM_LOCATION + floorDifferenceUp;
-            int floorBelow = Building.MAILROOM_LOCATION - floorDifferenceDown;
-            PriorityQueue<MailItem> itemsAbove;
-            PriorityQueue<MailItem> itemsBelow;
-            System.out.println("Running with floorAbove = " + floorAbove + " and floorBelow = " + floorBelow);
-            if(goUp && floorAbove <= Building.FLOORS) {
-                if ((itemsAbove = MailPool.getFloorMail(floorAbove)) != null && itemsAbove.size() != 0) {
-                    System.out.println("Check out floor " + floorAbove);
-                    try {
-                        System.out.println("Adding items from floor above :");
+        for(int row = 0; row < numItems; row++) {
+            values[row][0] = 0;
+        }
+        ArrayList<MailItem> itemsToAdd = new ArrayList<>();
+        ArrayList<MailItem> mailItems = MailPool.getMailItems();
+        for(int item = 1; item <= numItems; item++) {
 
-                        Iterator<MailItem> iterator = itemsAbove.iterator();
-                        System.out.println(itemsAbove);
-                        while (iterator.hasNext()) {
-                            MailItem mi;
-                            System.out.println("Tube currently has:" + tube.getTotalOfSizes());
+            for(int weight = 1; weight <= maxCapacity; weight++) {
 
-                            mi = iterator.next();
-                            if ((tube.getTotalOfSizes() + mi.getSize()) <= tube.MAXIMUM_CAPACITY) {
-                                tube.addItem(mi);
-                                iterator.remove();
-                            }
-                            if (tube.getTotalOfSizes() == tube.MAXIMUM_CAPACITY) {
-                                System.out.println("Tube is now full");
+                MailItem currentItem = mailItems.get(item - 1);
+                if(currentItem.getSize() > weight) {
+                    values[item][weight] = values[item - 1][weight];
+                }
+                else {
+                    values[item][weight] = Math.max(values[item - 1][weight],
+                            values[item - 1][weight - currentItem.getSize()]
+                                    + calculateDeliveryScore(currentItem));
 
-                                MailPool.isEmptyPool();
-                                return true;
-                            }
-                        }
 
-                    } catch (TubeFullException e) {
-                        return true;
-                    }
                 }
             }
 
-            if(goDown && floorBelow >= Building.LOWEST_FLOOR && floorBelow != floorAbove)
-            {
-                if ((itemsBelow = MailPool.getFloorMail(floorBelow)) != null && itemsBelow.size() != 0) {
-                    try {
-                        System.out.println("Adding items from floor below :");
-                        Iterator<MailItem> iterator = itemsBelow.iterator();
-                        while(iterator.hasNext()) {
-                            MailItem mi = iterator.next();
-                            if((tube.getTotalOfSizes() + mi.getSize()) <= tube.MAXIMUM_CAPACITY) {
-                                tube.addItem(mi);
-                                System.out.println(mi);
-                                iterator.remove();
-                            }
-                            if(tube.getTotalOfSizes() == tube.MAXIMUM_CAPACITY)
-                            {
-                                System.out.println("Tube is now full");
+        }
 
-                                MailPool.isEmptyPool();
-                                return true;
-                            }
-                        }
-                    } catch (TubeFullException e) {
-                        return true;
-                    }
-                }
-            }
+        int item = numItems;
+        int capacity = maxCapacity;
 
-            if(goUp && floorDifferenceUp == maxFloorDifferenceUp)
-            {
-                floorDifferenceUp = 0;
-                goUp = false;
-                goDown = true;
+        while(capacity > 0 && item > 0) {
+            if(values[item][capacity] != values[item - 1][capacity]) {
+                MailItem mailItem = mailItems.get(item - 1);
+                itemsToAdd.add(mailItem);
+                capacity = capacity -  mailItem.getSize();
             }
-            else if(goUp)
-            {
-                floorDifferenceUp++;
-            }
-            if(goDown && floorDifferenceDown == maxFloorDifferenceDown)
-            {
-                floorDifferenceDown = 0;
-                goUp = true;
-                goDown = false;
-            }
-            else if(goDown)
-            {
-                floorDifferenceDown++;
+            item = item - 1;
+        }
+        int count = 0;
+        while(count < itemsToAdd.size()) {
+
+            MailItem mi = itemsToAdd.get(count);
+            System.out.println("Adding to the tube " + mi);
+
+            mailItems.remove(mi);
+            try {
+                tube.addItem(mi);
+            } catch (TubeFullException e) {
+                System.out.println("Knapsack caused tube to be ");
+                return true;
             }
 
             count++;
         }
-
-        if(count >= this.maxFloorDifference && tube.getTotalOfSizes() > 0)
-        {
+        if(!tube.isEmpty())
             return true;
-
-        }
-
-
-        /*try{
-            if (!simpleMailPool.isEmptyPool()) {*/
-        /** Gets the first item from the ArrayList */
-        //MailItem mailItem = simpleMailPool.get();
-        /** Add the item to the tube */
-        //tube.addItem(mailItem);
-        /** Remove the item from the ArrayList */
-        //simpleMailPool.remove();
-        //}
-        //}
-        /** Refer to TubeFullException.java --
-         *  Usage below illustrates need to handle this exception. However you should
-         *  structure your code to avoid the need to catch this exception for normal operation
-         */
-        //catch(TubeFullException e){
-        //return true;
-        //}
-        /**
-         * Handles the case where the last delivery time has elapsed and there are no more
-         * items to deliver.
-         */
-        //if(Clock.Time() > Clock.LAST_DELIVERY_TIME && simpleMailPool.isEmptyPool() && !tube.isEmpty()){
-        // return true;
-        //}
-        //return false;*/
-
-
-
-        if((Clock.Time() > Clock.LAST_DELIVERY_TIME && MailPool.isEmptyPool() && !tube.isEmpty())) {
-            return true;
-        }
 
         return false;
 
+    }
+
+    private static double calculateDeliveryScore(MailItem deliveryItem) {
+        // Penalty for longer delivery times
+        final double penalty = 1.1;
+        // Take (delivery time - arrivalTime)**penalty * priority_weight
+        double priority_weight = 0;
+            // Determine the priority_weight
+        switch(deliveryItem.getPriorityLevel()) {
+            case "LOW":
+                priority_weight = 1;
+                break;
+            case "MEDIUM":
+                priority_weight = 1.5;
+                break;
+            case "HIGH":
+                priority_weight = 2;
+                break;
+        }
+
+        return Math.pow(deliveryItem.getArrivalTime() + 1, penalty)*priority_weight;
     }
 }
