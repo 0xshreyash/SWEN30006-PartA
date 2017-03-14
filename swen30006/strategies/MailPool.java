@@ -2,6 +2,7 @@ package strategies;
 
 
 /** Remove the imports that are not used */
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 import java.util.Comparator;
@@ -19,45 +20,49 @@ import automail.IMailPool;
  */
 public class MailPool implements IMailPool {
 
-    private ArrayList<MailItem> mailItems;
-    private int FRONT;
+    private HashMap<Integer, ArrayList<MailItem>> mailItems;
 
     public MailPool(){
 
-        this.mailItems = new ArrayList<>();
-        this.FRONT = 0;
+        this.mailItems = new HashMap<>();
 
     }
-
 
    @Override
     public void addToPool(MailItem mailItem) {
 
        System.out.println("Adding to the pool " + mailItem);
-       mailItems.add(mailItem);
+       int floor = mailItem.getDestFloor();
+       ArrayList<MailItem> floorItems;
+       if(this.mailItems.get(floor) == null) {
+           floorItems= new ArrayList<>();
+           floorItems.add(mailItem);
+           this.mailItems.put(floor, floorItems);
+       }
+       else {
+           floorItems = this.mailItems.get(floor);
+           floorItems.add(mailItem);
+
+       }
        return;
     }
 
-    public int getLength() {
-        return mailItems.size();
+    public int getNumItemsForFloor(Integer floor) {
+
+        return this.mailItems.get(floor).size();
     }
 
-    public ArrayList<MailItem> getMailItems() {
-        return this.mailItems;
+    public MailItem getMailItem(int floor, int index) {
+        return this.mailItems.get(floor).get(index);
     }
 
     public boolean isEmptyPool() {
         return mailItems.isEmpty();
     }
 
-    public MailItem getMailItem()
-    {
-
-        return this.mailItems.get(this.FRONT);
-    }
-
     public void removeMailItem(MailItem mailItem) {
-        this.mailItems.remove(mailItem);
+        int floor = mailItem.getDestFloor();
+        this.mailItems.remove(floor mailItem);
         return;
     }
 }

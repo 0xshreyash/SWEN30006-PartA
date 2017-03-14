@@ -124,15 +124,15 @@ public class MailSorter implements IMailSorter{
                 priority_weight = 1;
                 break;
             case "MEDIUM":
-                priority_weight = 2;
+                priority_weight = 1.5;
                 break;
             case "HIGH":
-                priority_weight = 3;
+                priority_weight = 2;
                 break;
         }
 
-        double score = Math.pow(Clock.Time() - deliveryItem.getArrivalTime() + 1, penalty)*(priority_weight) -
-                Math.abs(deliveryItem.getDestFloor() - Building.MAILROOM_LOCATION)*(max_priority - priority_weight);
+        double score = (Math.pow(Clock.Time() - deliveryItem.getArrivalTime() + 1, penalty)*(priority_weight)/
+                (Math.abs(deliveryItem.getDestFloor() - Building.MAILROOM_LOCATION) + 1);
         return score;
     }
 }
