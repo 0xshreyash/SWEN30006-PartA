@@ -50,6 +50,7 @@ public class Robot {
     		case WAITING:
     			/** Tell the sorter the robot is ready */
                 go = sorter.fillStorageTube(tube);
+
                 // System.out.println("Tube total size: "+tube.getTotalOfSizes());
                 /** If the StorageTube is ready and the Robot is waiting in the mailroom then start the delivery */
                 if(go){
@@ -84,6 +85,7 @@ public class Robot {
     public void setRoute(){
         /** Pop the item from the StorageUnit */
         deliveryItem = tube.pop();
+        System.out.println("Delivering " + deliveryItem);
         /** Set the destination floor */
         destination_floor = deliveryItem.getDestFloor();
     }

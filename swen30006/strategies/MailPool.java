@@ -4,6 +4,8 @@ package strategies;
 /** Remove the imports that are not used */
 
 import java.util.ArrayList;
+
+import automail.Building;
 import automail.MailItem;
 import automail.IMailPool;
 
@@ -78,6 +80,20 @@ public class MailPool implements IMailPool {
         System.out.println("==============================");
     }
 
+    public int getIndexForFloor(int referenceFloor) {
+
+
+        this.sortByFloor();
+
+        for(MailItem mailItem : this.mailItems) {
+            if(mailItem.getDestFloor() >= referenceFloor)
+            {
+                return this.mailItems.indexOf(mailItem);
+            }
+        }
+
+        return -1;
+    }
 
     public class FloorComparator implements Comparator<MailItem>
     {

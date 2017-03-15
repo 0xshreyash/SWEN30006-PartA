@@ -38,6 +38,7 @@ public class Simulation {
 
         while(MAIL_DELIVERED.size() != MAIL_TO_CREATE) {
         	// System.out.println("-- Step: "+Clock.Time());
+            // System.out.println("Mail delivered size: " + MAIL_DELIVERED.size());
             generator.step();
             automail.robot.step();
             Clock.Tick();
@@ -53,6 +54,7 @@ public class Simulation {
             MAIL_DELIVERED.add(deliveryItem);
             // Calculate delivery score
             total_score += calculateDeliveryScore(deliveryItem);
+
         }
         else{
             try {
