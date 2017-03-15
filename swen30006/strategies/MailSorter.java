@@ -36,7 +36,7 @@ public class MailSorter implements IMailSorter{
         int maxCapacity = tube.MAXIMUM_CAPACITY;
         int numItems = mailPool.getLength();
 
-        mailPool.sortByFloor(Building.MAILROOM_LOCATION);
+        mailPool.sortByFloor();
 
         double values[][]= new double[numItems + 1][maxCapacity + 1];
         int times[][] = new int[numItems + 1][maxCapacity + 1];

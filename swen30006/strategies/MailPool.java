@@ -53,9 +53,9 @@ public class MailPool implements IMailPool {
         return;
     }
 
-    public void sortByFloor(int referenceFloor) {
+    public void sortByFloor() {
 
-        FloorComparator comparator = new FloorComparator(referenceFloor);
+        FloorComparator comparator = new FloorComparator();
 
         Collections.sort(this.mailItems, comparator);
 
@@ -78,26 +78,20 @@ public class MailPool implements IMailPool {
 
     public class FloorComparator implements Comparator<MailItem>
     {
-        private int referenceFloor;
-        public FloorComparator(int referenceFloor) {
-            this.referenceFloor = referenceFloor;
+        public FloorComparator() {
 
         }
-        @Override
-        public int compare(MailItem one, MailItem two)
-        {
-            int floorOneDiff = one.getDestFloor() - this.referenceFloor;
-            int floorTwoDiff = two.getDestFloor() - this.referenceFloor;
-            int absfloorOneDiff = Math.abs(floorOneDiff);
-            int absfloorTwoDiff = Math.abs(floorTwoDiff);
 
-            if ((absfloorOneDiff < absfloorTwoDiff) ||
-                    ((absfloorOneDiff == absfloorTwoDiff) && floorOneDiff > floorTwoDiff))
+        @Override
+        public int compare(MailItem itemOne, MailItem itemTwo)
+        {
+            int floorOne = itemOne.getDestFloor();
+            int floorTwo = itemTwo.getDestFloor();
+            if (floorOne < floorTwo)
             {
                 return -1;
             }
-            if ((absfloorOneDiff > absfloorTwoDiff) ||
-                    ((absfloorOneDiff == absfloorTwoDiff) && floorOneDiff < floorTwoDiff))
+            if (floorTwo > floorOne)
             {
                 return 1;
             }
