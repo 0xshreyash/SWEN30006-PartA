@@ -206,7 +206,7 @@ public class MailSorter implements IMailSorter{
 
 
         double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + 1), penalty)*(priority_weight)*scale)
-                /(Math.pow((Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1), penalty)));
+                /(Math.pow((Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1), penalty)  - 1));
 
         return score;
     }
