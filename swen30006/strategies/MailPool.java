@@ -25,23 +25,12 @@ public class MailPool implements IMailPool {
 
     }
 
-   @Override
+    @Override
     public void addToPool(MailItem mailItem) {
 
-       System.out.println("Adding to the pool " + mailItem);
-       int floor = mailItem.getDestFloor();
-       ArrayList<MailItem> floorItems;
-       if(this.mailItems.get(floor) == null) {
-           floorItems= new ArrayList<>();
-           floorItems.add(mailItem);
-           this.mailItems.put(floor, floorItems);
-       }
-       else {
-           floorItems = this.mailItems.get(floor);
-           floorItems.add(mailItem);
-
-       }
-       return;
+        System.out.println("Adding to the pool " + mailItem);
+        mailItems.add(mailItem);
+        return;
     }
 
 

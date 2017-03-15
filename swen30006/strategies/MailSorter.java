@@ -168,13 +168,10 @@ public class MailSorter implements IMailSorter{
                 break;
         }
 
-<<<<<<< HEAD
-        double score = (Math.pow(Clock.Time() - deliveryItem.getArrivalTime() + 1, penalty)*(priority_weight)/
-                (Math.abs(deliveryItem.getDestFloor() - Building.MAILROOM_LOCATION) + 1);
-=======
+
         double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + 1), penalty)*(priority_weight + 1))
                 /(Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1));
->>>>>>> Knapsack
+
         return score;
     }
 }
