@@ -2,15 +2,12 @@ package strategies;
 
 
 /** Remove the imports that are not used */
-import java.util.Arrays;
-import java.util.PriorityQueue;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.ArrayList;
-import automail.Building;
-import automail.Clock;
 import automail.MailItem;
 import automail.IMailPool;
+
+import java.util.Collections;
+import java.util.Comparator;
 
 
 /**
@@ -20,15 +17,12 @@ import automail.IMailPool;
 public class MailPool implements IMailPool {
 
     private ArrayList<MailItem> mailItems;
-    private int FRONT;
 
     public MailPool(){
 
         this.mailItems = new ArrayList<>();
-        this.FRONT = 0;
 
     }
-
 
    @Override
     public void addToPool(MailItem mailItem) {
@@ -39,25 +33,75 @@ public class MailPool implements IMailPool {
     }
 
     public int getLength() {
+
         return mailItems.size();
     }
 
-    public ArrayList<MailItem> getMailItems() {
-        return this.mailItems;
+    public MailItem getMailItem(int index) {
+
+        return this.mailItems.get(index);
     }
 
     public boolean isEmptyPool() {
+
         return mailItems.isEmpty();
     }
 
-    public MailItem getMailItem()
-    {
-
-        return this.mailItems.get(this.FRONT);
-    }
-
     public void removeMailItem(MailItem mailItem) {
+
         this.mailItems.remove(mailItem);
         return;
+    }
+
+    public void sortByFloor(int referenceFloor) {
+
+        FloorComparator comparator = new FloorComparator(referenceFloor);
+
+        Collections.sort(this.mailItems, comparator);
+
+        printPool();
+
+        return;
+    }
+
+    public void printPool() {
+        System.out.println("==============================");
+        System.out.println("Result of sorting");
+        for(MailItem mi : this.mailItems) {
+            System.out.println(mi);
+
+        }
+
+        System.out.println("==============================");
+    }
+
+
+    public class FloorComparator implements Comparator<MailItem>
+    {
+        private int referenceFloor;
+        public FloorComparator(int referenceFloor) {
+            this.referenceFloor = referenceFloor;
+
+        }
+        @Override
+        public int compare(MailItem one, MailItem two)
+        {
+            int floorOneDiff = one.getDestFloor() - this.referenceFloor;
+            int floorTwoDiff = two.getDestFloor() - this.referenceFloor;
+            int absfloorOneDiff = Math.abs(floorOneDiff);
+            int absfloorTwoDiff = Math.abs(floorTwoDiff);
+
+            if ((absfloorOneDiff < absfloorTwoDiff) ||
+                    ((absfloorOneDiff == absfloorTwoDiff) && floorOneDiff > floorTwoDiff))
+            {
+                return -1;
+            }
+            if ((absfloorOneDiff > absfloorTwoDiff) ||
+                    ((absfloorOneDiff == absfloorTwoDiff) && floorOneDiff < floorTwoDiff))
+            {
+                return 1;
+            }
+            return 0;
+        }
     }
 }

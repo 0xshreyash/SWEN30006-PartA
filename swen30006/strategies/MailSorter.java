@@ -1,20 +1,10 @@
 package strategies;
 
 import automail.*;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
-
-import com.sun.xml.internal.rngom.dt.builtin.BuiltinDatatypeLibrary;
-import com.sun.xml.internal.ws.api.pipe.Tube;
 import exceptions.TubeFullException;
-import sun.misc.ConditionLock;
+import java.util.Arrays;
 
-import java.util.PriorityQueue;
 
 /**
  * A sample class for sorting mail:  this strategy just takes a MailItem
@@ -23,13 +13,18 @@ import java.util.PriorityQueue;
  */
 public class MailSorter implements IMailSorter{
 
-    MailPool MailPool;
+    private MailPool mailPool;
+
     private static int WAITING_TO_DELIVERY_TIME = 1;
     private static int DELIVERY_TIME = 1;
-    public MailSorter(MailPool MailPool) {
+    private static int fillingTube = 0;
 
-        this.MailPool = MailPool;
+    public MailSorter(MailPool mailPool) {
+
+        this.mailPool = mailPool;
     }
+
+
     /**
      * Fills the storage tube
      */
@@ -39,9 +34,26 @@ public class MailSorter implements IMailSorter{
         System.out.println("Hello! Filling tube at: " + Clock.Time());
 
         int maxCapacity = tube.MAXIMUM_CAPACITY;
-        int numItems = MailPool.getLength();
+        int numItems = mailPool.getLength();
+
+        mailPool.sortByFloor(Building.MAILROOM_LOCATION);
 
         double values[][]= new double[numItems + 1][maxCapacity + 1];
+        int times[][] = new int[numItems + 1][maxCapacity + 1];
+        int locations[][] = new int[numItems + 1][maxCapacity + 1];
+        int maxFloor[][] = new int[numItems + 1][maxCapacity + 1];
+        int minFloor[][] = new int[numItems + 1][maxCapacity + 1];
+
+        for(int itemTimeRow[] : times) {
+            Arrays.fill(itemTimeRow, Clock.Time());
+
+
+        }
+
+        for(int itemLocationArray[] : locations) {
+            Arrays.fill(itemLocationArray, Building.MAILROOM_LOCATION);
+        }
+
 
         for(int col = 0; col < maxCapacity; col++) {
 
@@ -52,21 +64,36 @@ public class MailSorter implements IMailSorter{
         for(int row = 0; row < numItems; row++) {
             values[row][0] = 0;
         }
+
         ArrayList<MailItem> itemsToAdd = new ArrayList<>();
-        ArrayList<MailItem> mailItems = MailPool.getMailItems();
+
         for(int item = 1; item <= numItems; item++) {
 
             for(int weight = 1; weight <= maxCapacity; weight++) {
 
-                MailItem currentItem = mailItems.get(item - 1);
+                MailItem currentItem = mailPool.getMailItem(item - 1);
                 if(currentItem.getSize() > weight) {
                     values[item][weight] = values[item - 1][weight];
                 }
                 else {
 
-                    values[item][weight] = Math.max(values[item - 1][weight],
-                            values[item - 1][weight - currentItem.getSize()]
-                                    + calculateDeliveryScore(currentItem));
+                    double altScore = values[item - 1][weight - currentItem.getSize()] + calculateDeliveryScore(currentItem, times[item - 1][weight - currentItem.getSize()], locations[item - 1][weight - currentItem.getSize()]);
+                    double prevScore = values[item - 1][weight];
+
+                    if(prevScore > altScore)
+                    {
+                        values[item][weight] = prevScore;
+                        times[item][weight] = times[item - 1][weight];
+                        locations[item][weight] = locations[item - 1][weight];
+
+                    }
+                    else {
+
+                        values[item][weight] = altScore;
+                        times[item][weight] = times[item - 1][weight]  + currentItem.getSize();
+                        locations[item][weight] = currentItem.getDestFloor();
+                    }
+
 
 
                 }
@@ -79,36 +106,46 @@ public class MailSorter implements IMailSorter{
 
         while(capacity > 0 && item > 0) {
             if(values[item][capacity] != values[item - 1][capacity]) {
-                MailItem mailItem = mailItems.get(item - 1);
+                MailItem mailItem = mailPool.getMailItem(item - 1);
                 itemsToAdd.add(mailItem);
                 capacity = capacity -  mailItem.getSize();
             }
             item = item - 1;
         }
         int count = 0;
+
+
         while(count < itemsToAdd.size()) {
 
             MailItem mi = itemsToAdd.get(count);
             System.out.println("Adding to the tube " + mi);
 
-            mailItems.remove(mi);
+
+            mailPool.removeMailItem(mi);
             try {
+
                 tube.addItem(mi);
             } catch (TubeFullException e) {
-                System.out.println("Knapsack caused tube to be ");
+                System.out.println("Knapsack caused tube to overflow");
+                this.fillingTube ++;
+                System.out.println(this.fillingTube);
                 return true;
             }
 
             count++;
         }
-        if(!tube.isEmpty())
+        System.out.println("==============================");
+        if(!tube.isEmpty()) {
+            this.fillingTube++;
+            System.out.println(this.fillingTube);
             return true;
+        }
 
         return false;
 
     }
 
-    private static double calculateDeliveryScore(MailItem deliveryItem) {
+    private static double calculateDeliveryScore(MailItem deliveryItem, int simulationTime, int referenceFloor) {
 
 
 
@@ -116,23 +153,23 @@ public class MailSorter implements IMailSorter{
         final double penalty = 1.1;
         // Take (delivery time - arrivalTime)**penalty * priority_weight
         double priority_weight = 0;
-        double max_priority = 2;
+        double scale = 10.0;
             // Determine the priority_weight
 
         switch(deliveryItem.getPriorityLevel()) {
             case "LOW":
-                priority_weight = 1;
-                break;
-            case "MEDIUM":
                 priority_weight = 2;
                 break;
+            case "MEDIUM":
+                priority_weight = 4;
+                break;
             case "HIGH":
-                priority_weight = 3;
+                priority_weight = 8;
                 break;
         }
 
-        double score = Math.pow(Clock.Time() - deliveryItem.getArrivalTime() + 1, penalty)*(priority_weight) -
-                Math.abs(deliveryItem.getDestFloor() - Building.MAILROOM_LOCATION)*(max_priority - priority_weight);
+        double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + 1), penalty)*(priority_weight + 1)*scale)
+                /(Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1));
         return score;
     }
 }
