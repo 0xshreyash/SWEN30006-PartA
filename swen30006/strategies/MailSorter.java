@@ -158,17 +158,17 @@ public class MailSorter implements IMailSorter{
 
         switch(deliveryItem.getPriorityLevel()) {
             case "LOW":
-                priority_weight = 2;
+                priority_weight = 1;
                 break;
             case "MEDIUM":
-                priority_weight = 4;
+                priority_weight = 1.5;
                 break;
             case "HIGH":
-                priority_weight = 8;
+                priority_weight = 2;
                 break;
         }
 
-        double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + 1), penalty)*(priority_weight + 1)*scale)
+        double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + 1), penalty)*(priority_weight + 1))
                 /(Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1));
         return score;
     }
