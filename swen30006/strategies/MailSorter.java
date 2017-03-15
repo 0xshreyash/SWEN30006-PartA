@@ -1,6 +1,8 @@
 package strategies;
 
 import automail.*;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import exceptions.TubeFullException;
 import java.util.Arrays;
@@ -38,88 +40,23 @@ public class MailSorter implements IMailSorter{
 
         mailPool.sortByFloor();
 
-        double values[][]= new double[numItems + 1][maxCapacity + 1];
-        int times[][] = new int[numItems + 1][maxCapacity + 1];
-        int locations[][] = new int[numItems + 1][maxCapacity + 1];
-        int maxFloor[][] = new int[numItems + 1][maxCapacity + 1];
-        int minFloor[][] = new int[numItems + 1][maxCapacity + 1];
 
-        for(int itemTimeRow[] : times) {
-            Arrays.fill(itemTimeRow, Clock.Time());
+        double values[][] = Knapsack(numItems, maxCapacity);
 
-
-        }
-
-        for(int itemLocationArray[] : locations) {
-            Arrays.fill(itemLocationArray, Building.MAILROOM_LOCATION);
-        }
-
-
-        for(int col = 0; col < maxCapacity; col++) {
-
-            values[0][col] = 0;
-
-        }
-
-        for(int row = 0; row < numItems; row++) {
-            values[row][0] = 0;
-        }
-
-        ArrayList<MailItem> itemsToAdd = new ArrayList<>();
-
-        for(int item = 1; item <= numItems; item++) {
-
-            for(int weight = 1; weight <= maxCapacity; weight++) {
-
-                MailItem currentItem = mailPool.getMailItem(item - 1);
-                if(currentItem.getSize() > weight) {
-                    values[item][weight] = values[item - 1][weight];
-                }
-                else {
-
-                    double altScore = values[item - 1][weight - currentItem.getSize()] + calculateDeliveryScore(currentItem, times[item - 1][weight - currentItem.getSize()], locations[item - 1][weight - currentItem.getSize()]);
-                    double prevScore = values[item - 1][weight];
-
-                    if(prevScore > altScore)
-                    {
-                        values[item][weight] = prevScore;
-                        times[item][weight] = times[item - 1][weight];
-                        locations[item][weight] = locations[item - 1][weight];
-
-                    }
-                    else {
-
-                        values[item][weight] = altScore;
-                        times[item][weight] = times[item - 1][weight]  + currentItem.getSize();
-                        locations[item][weight] = currentItem.getDestFloor();
-                    }
+        int referenceFloor = Building.MAILROOM_LOCATION;
 
 
 
-                }
-            }
 
-        }
+        ArrayList<MailItem> itemsToAdd = determineItems(values, numItems, maxCapacity);
 
-        int item = numItems;
-        int capacity = maxCapacity;
 
-        while(capacity > 0 && item > 0) {
-            if(values[item][capacity] != values[item - 1][capacity]) {
-                MailItem mailItem = mailPool.getMailItem(item - 1);
-                itemsToAdd.add(mailItem);
-                capacity = capacity -  mailItem.getSize();
-            }
-            item = item - 1;
-        }
         int count = 0;
-
 
         while(count < itemsToAdd.size()) {
 
             MailItem mi = itemsToAdd.get(count);
             System.out.println("Adding to the tube " + mi);
-
 
             mailPool.removeMailItem(mi);
             try {
@@ -145,9 +82,78 @@ public class MailSorter implements IMailSorter{
 
     }
 
+    private double[][] Knapsack(int numItems, int maxCapacity) {
+
+
+        double values[][]= new double[numItems + 1][maxCapacity + 1];
+        int times[][] = new int[numItems + 1][maxCapacity + 1];
+        int locations[][] = new int[numItems + 1][maxCapacity + 1];
+
+        for(int itemTimeRow[] : times) {
+            Arrays.fill(itemTimeRow, Clock.Time());
+        }
+
+        for(int itemLocationArray[] : locations) {
+            Arrays.fill(itemLocationArray, Building.MAILROOM_LOCATION);
+        }
+
+        for(int col = 0; col < maxCapacity; col++) {
+            values[0][col] = 0;
+        }
+
+        for(int row = 0; row < numItems; row++) {
+            values[row][0] = 0;
+        }
+
+        for(int item = 1; item <= numItems; item++) {
+            for(int weight = 1; weight <= maxCapacity; weight++) {
+                MailItem currentItem = this.mailPool.getMailItem(item - 1);
+                if(currentItem.getSize() > weight) {
+                    values[item][weight] = values[item - 1][weight];
+                }
+                else {
+                    double altScore = values[item - 1][weight - currentItem.getSize()] +
+                            calculateDeliveryScore(currentItem, times[item - 1][weight - currentItem.getSize()],
+                                    locations[item - 1][weight - currentItem.getSize()]);
+                    double prevScore = values[item - 1][weight];
+                    if(prevScore > altScore) {
+                        values[item][weight] = prevScore;
+                        times[item][weight] = times[item - 1][weight];
+                        locations[item][weight] = locations[item - 1][weight];
+
+                    }
+                    else {
+
+                        values[item][weight] = altScore;
+                        times[item][weight] = times[item - 1][weight]  + currentItem.getSize();
+                        locations[item][weight] = currentItem.getDestFloor();
+                    }
+                }
+            }
+
+        }
+
+        return values;
+    }
+
+    private ArrayList<MailItem> determineItems(double [][]values, int numItems, int maxCapacity) {
+        int capacity = maxCapacity;
+        int item = numItems;
+        ArrayList<MailItem> itemsToAdd = new ArrayList<>();
+        while(capacity > 0 && item > 0) {
+            if(values[item][capacity] != values[item - 1][capacity]) {
+                MailItem mailItem = mailPool.getMailItem(item - 1);
+                itemsToAdd.add(mailItem);
+                capacity = capacity -  mailItem.getSize();
+            }
+            item = item - 1;
+        }
+
+        return itemsToAdd;
+
+    }
+
     private static double calculateDeliveryScore(MailItem deliveryItem, int simulationTime, int referenceFloor) {
-
-
 
         // Penalty for longer delivery times
         final double penalty = 1.1;
@@ -169,7 +175,7 @@ public class MailSorter implements IMailSorter{
         }
 
 
-        double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + 1), penalty)*(priority_weight + 1))
+        double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + 1), penalty)*(priority_weight ))
                 /(Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1));
 
         return score;
