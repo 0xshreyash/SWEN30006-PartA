@@ -154,7 +154,7 @@ public class MailSorter implements IMailSorter{
                     else {
 
                         values[item][weight] = altScore;
-                        times[item][weight] = times[item - 1][weight]  + currentItem.getSize();
+                        times[item][weight] = times[item - 1][weight]  + currentItem.getDestFloor() + 1;
                         locations[item][weight] = currentItem.getDestFloor();
                     }
                 }
@@ -197,16 +197,15 @@ public class MailSorter implements IMailSorter{
                 priority_weight = 1;
                 break;
             case "MEDIUM":
-                priority_weight = 1.5;
+                priority_weight = 3;
                 break;
             case "HIGH":
-                priority_weight = 2;
+                priority_weight = 7;
                 break;
         }
 
-
         double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + 1), penalty)*(priority_weight)*scale)
-                /(Math.pow((Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1), penalty)  - 1));
+                /(Math.pow((Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1), penalty)  - 1)) + Math.pow(priority_weight, penalty);
 
         return score;
     }

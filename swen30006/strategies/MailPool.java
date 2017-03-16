@@ -1,14 +1,12 @@
 package strategies;
 
 
-/** Remove the imports that are not used */
-
-import java.util.ArrayList;
-
-import automail.Building;
+/** Importing relevant classes from automail */
 import automail.MailItem;
 import automail.IMailPool;
 
+/** Importing java libraries */
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
