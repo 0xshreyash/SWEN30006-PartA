@@ -164,9 +164,11 @@ public class MailSorter implements IMailSorter{
                     values[item][weight] = values[item - 1][weight];
                 }
                 else {
+
+                    times[item][weight] = times[item - 1][weight - currentItem.getSize()]  + currentItem.getDestFloor() + 1;
                     double altScore = (values[item - 1][weight - currentItem.getSize()] +
 
-                            (calculateDeliveryScore(currentItem, times[item - 1][weight - currentItem.getSize()],
+                            (calculateDeliveryScore(currentItem, times[item][weight - currentItem.getSize()],
                                     locations[item - 1][weight - currentItem.getSize()])));
 
                     double prevScore = values[item - 1][weight];
@@ -180,7 +182,6 @@ public class MailSorter implements IMailSorter{
                     else {
 
                         values[item][weight] = altScore;
-                        times[item][weight] = times[item - 1][weight - currentItem.getSize()]  + currentItem.getDestFloor() + 1;
                         locations[item][weight] = currentItem.getDestFloor();
                     }
                 }
@@ -215,26 +216,23 @@ public class MailSorter implements IMailSorter{
         final double penalty = 1.1;
         // Take (delivery time - arrivalTime)**penalty * priority_weight
         double priority_weight = 0.1;
-        double priority_additive_value = 0.1;
+        // double priority_additive_value = 0.1;
         double scale = 10.0;
             // Determine the priority_weight
 
         switch(deliveryItem.getPriorityLevel()) {
             case "LOW":
                 priority_weight = 1;
-                priority_additive_value = 1;
                 break;
             case "MEDIUM":
                 priority_weight = 1.5;
-                priority_additive_value = 2;
                 break;
             case "HIGH":
                 priority_weight = 2;
-                priority_additive_value = 3.5;
                 break;
         }
-        double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + priority_additive_value), penalty)*(priority_weight))
-                /(Math.pow((Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1)*1.4, penalty) - 1));
+        double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + priority_weight*priority_weight), penalty)*(priority_weight))
+                /(Math.pow((Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1)*penalty, penalty) - 1));
 
         // System.out.println(score);
 
