@@ -53,6 +53,7 @@ public class Simulation {
         if(!MAIL_DELIVERED.contains(deliveryItem)){
             MAIL_DELIVERED.add(deliveryItem);
             // Calculate delivery score
+            System.out.println("Now adding score: " + calculateDeliveryScore(deliveryItem));
             total_score += calculateDeliveryScore(deliveryItem);
 
         }

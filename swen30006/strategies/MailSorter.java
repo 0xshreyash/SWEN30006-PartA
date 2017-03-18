@@ -50,7 +50,7 @@ public class MailSorter implements IMailSorter{
     @Override
     public boolean fillStorageTube(StorageTube tube) {
 
-        System.out.println("Hello! Filling tube at: " + Clock.Time());
+        // System.out.println("Hello! Filling tube at: " + Clock.Time());
 
         /* Capacity of the tube */
         int maxCapacity = tube.MAXIMUM_CAPACITY;
@@ -68,7 +68,7 @@ public class MailSorter implements IMailSorter{
          */
         int indexDivider = this.mailPool.getIndexForFloor(referenceFloor);
 
-        
+
         double valuesTop[][];
         double valuesBottom[][];
         double values[][];
@@ -103,7 +103,7 @@ public class MailSorter implements IMailSorter{
         while(count < itemsToAdd.size()) {
 
             MailItem mi = itemsToAdd.get(count);
-            System.out.println("Adding to the tube " + mi);
+            // System.out.println("Adding to the tube " + mi);
 
 
 
@@ -112,19 +112,19 @@ public class MailSorter implements IMailSorter{
                 mailPool.removeMailItem(mi);
                 itemsDelivered ++;
             } catch (TubeFullException e) {
-                System.out.println("Knapsack caused tube to overflow");
+                // System.out.println("Knapsack caused tube to overflow");
                 this.fillingTube ++;
-                System.out.println(this.fillingTube);
+                // System.out.println(this.fillingTube);
                 return true;
             }
 
             count++;
         }
-        System.out.println("==============================");
+        // System.out.println("==============================");
         if(!tube.isEmpty()) {
             this.fillingTube++;
-            System.out.println("Filled the tube " + this.fillingTube);
-            System.out.println("Items delivered being delivered " + this.itemsDelivered);
+            // System.out.println("Filled the tube " + this.fillingTube);
+            // System.out.println("Items delivered being delivered " + this.itemsDelivered);
             return true;
         }
         return false;
@@ -164,9 +164,10 @@ public class MailSorter implements IMailSorter{
                     values[item][weight] = values[item - 1][weight];
                 }
                 else {
-                    double altScore = values[item - 1][weight - currentItem.getSize()] +
-                            calculateDeliveryScore(currentItem, times[item - 1][weight - currentItem.getSize()],
-                                    locations[item - 1][weight - currentItem.getSize()]);
+                    double altScore = (values[item - 1][weight - currentItem.getSize()] +
+
+                            (calculateDeliveryScore(currentItem, times[item - 1][weight - currentItem.getSize()],
+                                    locations[item - 1][weight - currentItem.getSize()])));
 
                     double prevScore = values[item - 1][weight];
                     if(prevScore > altScore) {
@@ -221,20 +222,21 @@ public class MailSorter implements IMailSorter{
         switch(deliveryItem.getPriorityLevel()) {
             case "LOW":
                 priority_weight = 1;
-                priority_additive_value = 2;
+                priority_additive_value = 1;
                 break;
             case "MEDIUM":
                 priority_weight = 1.5;
-                priority_additive_value = 4;
+                priority_additive_value = 2;
                 break;
             case "HIGH":
                 priority_weight = 2;
-                priority_additive_value = 6;
+                priority_additive_value = 3.5;
                 break;
         }
-        double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + 1 + priority_additive_value), penalty)*(priority_weight))
-                /(Math.pow((Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1)*2, penalty) - 1));
-        System.out.println(score);
+        double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + priority_additive_value), penalty)*(priority_weight))
+                /(Math.pow((Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1)*1.4, penalty) - 1));
+
+        // System.out.println(score);
 
         return score;
     }

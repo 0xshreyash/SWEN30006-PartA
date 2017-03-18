@@ -49,7 +49,7 @@ public class MailPool implements IMailPool {
     @Override
     public void addToPool(MailItem mailItem) {
 
-        System.out.println("Adding to the pool " + mailItem);
+        // System.out.println("Adding to the pool " + mailItem);
         mailItems.add(mailItem);
         return;
     }
@@ -112,14 +112,14 @@ public class MailPool implements IMailPool {
      * Prints the whole list of mailItems, used mainly for debugging.
      */
     public void printPool() {
-        System.out.println("==============================");
+        // System.out.println("==============================");
         //System.out.println("Result of sorting");
         for(MailItem mi : this.mailItems) {
-            System.out.println(mi);
+            // System.out.println(mi);
 
         }
 
-        System.out.println("==============================");
+        // System.out.println("==============================");
     }
 
     /**
