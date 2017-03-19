@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="778b5332-a33a-484f-b0e9-70017153acb6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/automail/Simulation.class" afterPath="$PROJECT_DIR$/bin/automail/Simulation.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/strategies/MailSorter.class" afterPath="$PROJECT_DIR$/bin/strategies/MailSorter.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swen30006/automail/Simulation.java" afterPath="$PROJECT_DIR$/swen30006/automail/Simulation.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swen30006/strategies/MailSorter.java" afterPath="$PROJECT_DIR$/swen30006/strategies/MailSorter.java" />
-    </list>
+    <list default="true" id="778b5332-a33a-484f-b0e9-70017153acb6" name="Default" comment="" />
     <ignored path="Part A.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/bin/" />
@@ -247,7 +241,7 @@
       </extension>
       <option name="MAIN_CLASS_NAME" value="automail.Simulation" />
       <option name="VM_PARAMETERS" value="" />
-      <option name="PROGRAM_PARAMETERS" value="30006" />
+      <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
@@ -778,12 +772,12 @@
       <workItem from="1489570733953" duration="16423000" />
       <workItem from="1489663113339" duration="42000" />
       <workItem from="1489672152219" duration="11931000" />
-      <workItem from="1489823162471" duration="8522000" />
+      <workItem from="1489823162471" duration="8763000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="109895000" />
+    <option name="totallyTimeSpent" value="110136000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1229" height="1200" extended-state="0" />
