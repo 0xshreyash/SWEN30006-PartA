@@ -29,9 +29,6 @@ public class MailSorter implements IMailSorter{
      * */
     private MailPool mailPool;
 
-    // REMOVE US.
-    private static int fillingTube = 0;
-    private static int itemsDelivered = 0;
 
     /**
      * Constructor that tells the sorter which mailPool it is to sort.
@@ -46,6 +43,7 @@ public class MailSorter implements IMailSorter{
     /**
      * Function that is called in order to fill the storage tube of the robot in with the
      * highest priority items so that the score can be minimized.
+     * @param tube the storage tube to be filled by the sorting algorithm.
      */
     @Override
     public boolean fillStorageTube(StorageTube tube) {
@@ -67,8 +65,7 @@ public class MailSorter implements IMailSorter{
          * to the sorter.
          */
         int indexDivider = this.mailPool.getIndexForFloor(referenceFloor);
-
-
+        
         double valuesTop[][];
         double valuesBottom[][];
         double values[][];
@@ -110,10 +107,10 @@ public class MailSorter implements IMailSorter{
             try {
                 tube.addItem(mi);
                 mailPool.removeMailItem(mi);
-                itemsDelivered ++;
+
             } catch (TubeFullException e) {
                 // System.out.println("Knapsack caused tube to overflow");
-                this.fillingTube ++;
+
                 // System.out.println(this.fillingTube);
                 return true;
             }
@@ -122,7 +119,7 @@ public class MailSorter implements IMailSorter{
         }
         // System.out.println("==============================");
         if(!tube.isEmpty()) {
-            this.fillingTube++;
+
             // System.out.println("Filled the tube " + this.fillingTube);
             // System.out.println("Items delivered being delivered " + this.itemsDelivered);
             return true;
@@ -164,15 +161,11 @@ public class MailSorter implements IMailSorter{
                     values[item][weight] = values[item - 1][weight];
                 }
                 else {
-
-                    times[item][weight] = times[item - 1][weight - currentItem.getSize()]  + currentItem.getDestFloor() + 1;
                     double altScore = (values[item - 1][weight - currentItem.getSize()] +
-
                             (calculateDeliveryScore(currentItem, times[item][weight - currentItem.getSize()],
                                     locations[item - 1][weight - currentItem.getSize()])));
-
                     double prevScore = values[item - 1][weight];
-                    if(prevScore > altScore) {
+                    if(prevScore >= altScore) {
 
                         values[item][weight] = prevScore;
                         times[item][weight] = times[item - 1][weight];
@@ -180,7 +173,7 @@ public class MailSorter implements IMailSorter{
 
                     }
                     else {
-
+                        times[item][weight] = times[item - 1][weight - currentItem.getSize()]  + currentItem.getDestFloor() + 1;
                         values[item][weight] = altScore;
                         locations[item][weight] = currentItem.getDestFloor();
                     }
@@ -210,10 +203,21 @@ public class MailSorter implements IMailSorter{
 
     }
 
+    /**
+     * Function takes the a mailItem, the current time in the simulation (an overestimate) and a reference floor i.e.
+     * the floor the robot was at when considering whether to deliver the mail item passed as parameter so that we
+     * can measure the relative distance of the floors, to make sure the robot doesn't have to travel large distances.
+     * If the robot ends up travelling too far then it will take it too long to come back when we could have just
+     * delivered something else (thus, the distance is factored into the score).
+     * @param deliveryItem the item being considered to be delivered.
+     * @param simulationTime the overestimated time in the simulation.
+     * @param referenceFloor the floor the robot is at when considering the deliveryItem.
+     * @return the score of the item, higher means the item is more likely to be selected.
+     */
     private static double calculateDeliveryScore(MailItem deliveryItem, int simulationTime, int referenceFloor) {
 
         // Penalty for longer delivery times
-        final double penalty = 1.1;
+        final double penalty = 1.2;
         // Take (delivery time - arrivalTime)**penalty * priority_weight
         double priority_weight = 0.1;
         // double priority_additive_value = 0.1;
@@ -231,8 +235,11 @@ public class MailSorter implements IMailSorter{
                 priority_weight = 2;
                 break;
         }
-        double score =  ((Math.pow((simulationTime - deliveryItem.getArrivalTime() + priority_weight*priority_weight), penalty)*(priority_weight))
-                /(Math.pow((Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1)*penalty, penalty) - 1));
+
+        double numerator = simulationTime - deliveryItem.getArrivalTime() + priority_weight*priority_weight;
+        double denominator = Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1;
+        double score =  ((Math.pow((numerator), penalty)*(priority_weight))
+                /(Math.pow(denominator*penalty, penalty*penalty) - 1));
 
         // System.out.println(score);
 
