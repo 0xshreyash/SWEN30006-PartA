@@ -65,7 +65,7 @@ public class MailSorter implements IMailSorter{
          * to the sorter.
          */
         int indexDivider = this.mailPool.getIndexForFloor(referenceFloor);
-        
+
         double valuesTop[][];
         double valuesBottom[][];
         double values[][];
@@ -217,7 +217,7 @@ public class MailSorter implements IMailSorter{
     private static double calculateDeliveryScore(MailItem deliveryItem, int simulationTime, int referenceFloor) {
 
         // Penalty for longer delivery times
-        final double penalty = 1.2;
+        final double penalty = 1.3;
         // Take (delivery time - arrivalTime)**penalty * priority_weight
         double priority_weight = 0.1;
         // double priority_additive_value = 0.1;
@@ -229,7 +229,7 @@ public class MailSorter implements IMailSorter{
                 priority_weight = 1;
                 break;
             case "MEDIUM":
-                priority_weight = 1.5;
+                priority_weight = 1.6;
                 break;
             case "HIGH":
                 priority_weight = 2;
