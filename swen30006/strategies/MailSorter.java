@@ -71,7 +71,7 @@ public class MailSorter implements IMailSorter{
         int indexDivider = this.mailPool.getIndexForFloor(referenceFloor);
 
 
-        double valuesTop[][];
+        /*double valuesTop[][];
         double valuesBottom[][];
         double values[][];
         int startIndex = 0;
@@ -96,10 +96,10 @@ public class MailSorter implements IMailSorter{
         }
         else {
             values = Knapsack(1, totalNumItems, maxCapacity);
-        }
+        }*/
 
 
-        ArrayList<MailItem> itemsToAdd = determineItems(values, startIndex, values.length  - 1, maxCapacity);
+        ArrayList<MailItem> itemsToAdd = chooseKnapsackValues( indexDivider, totalNumItems, maxCapacity);
 
         int count = 0;
         // Get rid of the try catch block. Needs to be gotten rid of. !!!!!!
@@ -130,6 +130,39 @@ public class MailSorter implements IMailSorter{
 
     }
 
+
+    private ArrayList<MailItem> chooseKnapsackValues( int indexDivider, int totalNumItems, int maxCapacity) {
+        double valuesTop[][];
+        double valuesBottom[][];
+        int startIndex = 0;
+        double values[][];
+
+        if(indexDivider > -1) {
+
+            valuesTop = Knapsack(indexDivider + 1, totalNumItems, maxCapacity);
+            valuesBottom = Knapsack(1, indexDivider, maxCapacity);
+
+            double [] lastTopRow = valuesTop[valuesTop.length - 1];
+            double lastTopValue = lastTopRow[lastTopRow.length - 1];
+
+            double [] lastBottomRow = valuesBottom[valuesBottom.length - 1];
+            double lastBottomValue = lastBottomRow[lastBottomRow.length - 1];
+
+            if(lastTopValue > lastBottomValue) {
+                values = valuesTop;
+                startIndex = indexDivider;
+            }
+            else {
+                values = valuesBottom;
+            }
+        }
+        else {
+            values = Knapsack(1, totalNumItems, maxCapacity);
+        }
+
+        return determineItems(values, startIndex, values.length  - 1, maxCapacity);
+
+    }
 
     // Start item is the number of the first item in the knapsack, last is the index of the last item.
     private double[][] Knapsack(int startItem, int lastItem, int maxCapacity) {
@@ -175,7 +208,8 @@ public class MailSorter implements IMailSorter{
 
                     }
                     else {
-                        times[item][weight] = times[item - 1][weight - currentItem.getSize()]  + currentItem.getDestFloor() + 1;
+                        times[item][weight] = times[item - 1][weight - currentItem.getSize()]  +
+                                currentItem.getDestFloor() + 1;
                         values[item][weight] = altScore;
                         locations[item][weight] = currentItem.getDestFloor();
                     }
