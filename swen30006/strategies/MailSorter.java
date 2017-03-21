@@ -66,68 +66,36 @@ public class MailSorter implements IMailSorter{
          * getIndexForFloor sorts the mailItems so that we can iterate through the mailItems
          * in an ordered manner, also keeps the control of the mailItems to the pool and not
          * to the sorter.
-        */
-        /* For all intents and purposes the sorter will think the mail pool is sorted */
+         */
         int indexDivider = this.mailPool.getIndexForFloor(referenceFloor);
 
-
-        /*double valuesTop[][];
-        double valuesBottom[][];
-        double values[][];
-        int startIndex = 0;
-        if(indexDivider > -1) {
-
-            valuesTop = Knapsack(indexDivider + 1, totalNumItems, maxCapacity);
-            valuesBottom = Knapsack(1, indexDivider, maxCapacity);
-
-            double [] lastTopRow = valuesTop[valuesTop.length - 1];
-            double lastTopValue = lastTopRow[lastTopRow.length - 1];
-
-            double [] lastBottomRow = valuesBottom[valuesBottom.length - 1];
-            double lastBottomValue = lastBottomRow[lastBottomRow.length - 1];
-
-            if(lastTopValue > lastBottomValue) {
-                values = valuesTop;
-                startIndex = indexDivider;
-            }
-            else {
-                values = valuesBottom;
-            }
-        }
-        else {
-            values = Knapsack(1, totalNumItems, maxCapacity);
-        }*/
-
-
+        /* These are the items to add to the tube */
         ArrayList<MailItem> itemsToAdd = chooseKnapsackValues( indexDivider, totalNumItems, maxCapacity);
 
         int count = 0;
+
         // Get rid of the try catch block. Needs to be gotten rid of. !!!!!!
         while(count < itemsToAdd.size()) {
 
             MailItem mi = itemsToAdd.get(count);
-            // System.out.println("Adding to the tube " + mi);
+
             try {
+                this.mailPool.removeMailItem(mi);
                 tube.addItem(mi);
-                mailPool.removeMailItem(mi);
 
             } catch (TubeFullException e) {
-                // System.out.println("Knapsack caused tube to overflow");
-
-                // System.out.println(this.fillingTube);
                 return true;
             }
             count++;
         }
         // System.out.println("==============================");
         if(!tube.isEmpty()) {
-
             // System.out.println("Filled the tube " + this.fillingTube);
             // System.out.println("Items delivered being delivered " + this.itemsDelivered);
             return true;
         }
-        return false;
 
+        return false;
     }
 
 
@@ -272,9 +240,9 @@ public class MailSorter implements IMailSorter{
                 break;
         }
 
-        double numerator = simulationTime - deliveryItem.getArrivalTime() + priority_weight*priority_weight;
+        double numerator = simulationTime - deliveryItem.getArrivalTime() + Math.pow(priority_weight, 2);
         double denominator = Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1;
-        double score =  ((Math.pow((numerator), penalty)*(priority_weight))
+        double score =  ((Math.pow(numerator, penalty)*(priority_weight))
                 /(Math.pow(denominator*penalty, penalty*penalty) - 1));
 
         // System.out.println(score);
