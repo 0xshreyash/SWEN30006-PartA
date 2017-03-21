@@ -10,11 +10,11 @@
 package strategies;
 
 
-/** Importing relevant classes from automail */
+/** Importing relevant classes from package automail */
 import automail.MailItem;
 import automail.IMailPool;
 
-/** Importing java libraries */
+/** Importing java library classes */
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,18 +23,19 @@ import java.util.Comparator;
 /**
  * Class contains all the mailItems delivered to the building. The class initially chucks all the
  * mail into an ArrayList (due to easy access and insertion) and sorts the mail according to the
- * floor when the robot comes to take some mail to deliver.
+ * floor when the robot comes to take some mail to deliver. The mail is not sorted continuously
+ * since sorting when every item comes in is more work than required and the only time we need to
+ * sort is when the robot comes in to take the items (sorting is called in getIndexForFloor function).
  */
 public class MailPool implements IMailPool {
 
-
     /**
-     * List of the items in the Mail Pool
+     * ArrayList of the items in the Mail Pool
      * */
     private ArrayList<MailItem> mailItems;
 
     /**
-     * Constructor that initializes mailItems to an empty ArrayList.
+     * Constructor that creates the MailPool and initializes mailItems to an empty ArrayList.
      */
     public MailPool(){
 
@@ -55,7 +56,7 @@ public class MailPool implements IMailPool {
     }
 
     /**
-     * Fidns the length of the mailItems ArrayList.
+     * Finds the length of the mailItems ArrayList.
      * @return current length of the mailItems ArrayList.
      */
     public int getLength() {
@@ -64,8 +65,10 @@ public class MailPool implements IMailPool {
     }
 
     /**
+     * FUNCTION IS USED TO ITERATE THROUGH THE ARRAYLIST ONCE IT IS SORTED.
      * Allows user to get the mailItem at a certain index. In this way we can iterate through
-     * the mailItems without having to pass all the items to the MailSorter.
+     * the mailItems without having to pass all the items to the MailSorter. (which is not in the best
+     * interests of abstraction).
      * @param index the index of the mail item to find from the pool.
      * @return the mail item at the given index.
      */
@@ -84,11 +87,10 @@ public class MailPool implements IMailPool {
     }
 
     /**
-     * Removes the mail item provided as parameter.
+     * Removes the mail item provided as parameter from the mail Pool.
      * @param mailItem the mail item to be removed.
      */
     public void removeMailItem(MailItem mailItem) {
-
 
         this.mailItems.remove(mailItem);
         return;
@@ -100,11 +102,8 @@ public class MailPool implements IMailPool {
     private void sortByFloor() {
 
         FloorComparator comparator = new FloorComparator();
-
         Collections.sort(this.mailItems, comparator);
-
         printPool();
-
         return;
     }
 
@@ -112,14 +111,13 @@ public class MailPool implements IMailPool {
      * Prints the whole list of mailItems, used mainly for debugging.
      */
     public void printPool() {
-        // System.out.println("==============================");
-        //System.out.println("Result of sorting");
+        System.out.println("==============================");
+        System.out.println("Result of sorting");
         for(MailItem mi : this.mailItems) {
-            // System.out.println(mi);
+            System.out.println(mi);
 
         }
-
-        // System.out.println("==============================");
+        System.out.println("==============================");
     }
 
     /**
@@ -132,18 +130,20 @@ public class MailPool implements IMailPool {
     public int getIndexForFloor(int referenceFloor) {
 
         /* Calling sort here because this is the time we would need the items in
-         * a sorted order, and thus, don't ned to do the extra work of sorting
+         * a sorted order, and thus, don't need to do the extra work of sorting
          * items as they come in.
          */
         this.sortByFloor();
 
         for(MailItem mailItem : this.mailItems) {
+
             if(mailItem.getDestFloor() >= referenceFloor)
             {
+                System.out.println("Divider is:" + this.mailItems.indexOf(mailItem));
                 return this.mailItems.indexOf(mailItem);
+
             }
         }
-
         return -1;
     }
 
@@ -153,21 +153,23 @@ public class MailPool implements IMailPool {
      */
     public class FloorComparator implements Comparator<MailItem>
     {
-
-        @Override
+        /**
+         * Function is used to compare values when sorting the mail pool items.
+         * @param itemOne the first item of the comparison
+         * @param itemTwo the second item of the comparison
+         * @return -1 if floor of itemOne is less than floor of itemTwo, 1
+         * if the floor of itemOne is greater than floor for itemTwo, or if the floors
+         * are equal (since itemTwo will have a later arrival time so it makes sense for it
+         * to be after itemOne).
+         */
         public int compare(MailItem itemOne, MailItem itemTwo)
         {
             int floorOne = itemOne.getDestFloor();
             int floorTwo = itemTwo.getDestFloor();
-            if (floorOne < floorTwo)
-            {
+            if (floorOne < floorTwo) {
                 return -1;
             }
-            if (floorTwo > floorOne)
-            {
-                return 1;
-            }
-            return 0;
+            return 1;
         }
     }
 }

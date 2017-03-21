@@ -6,10 +6,13 @@
  * Semester 1, 2017
  * */
 
+/** Package name is strategies */
 package strategies;
 
+/** Import all classes from automail */
 import automail.*;
 
+/** Importing relevant classes from java libraries */
 import java.util.ArrayList;
 import exceptions.TubeFullException;
 import java.util.Arrays;
@@ -63,8 +66,10 @@ public class MailSorter implements IMailSorter{
          * getIndexForFloor sorts the mailItems so that we can iterate through the mailItems
          * in an ordered manner, also keeps the control of the mailItems to the pool and not
          * to the sorter.
-         */
+        */
+        /* For all intents and purposes the sorter will think the mail pool is sorted */
         int indexDivider = this.mailPool.getIndexForFloor(referenceFloor);
+
 
         double valuesTop[][];
         double valuesBottom[][];
@@ -93,6 +98,7 @@ public class MailSorter implements IMailSorter{
             values = Knapsack(1, totalNumItems, maxCapacity);
         }
 
+
         ArrayList<MailItem> itemsToAdd = determineItems(values, startIndex, values.length  - 1, maxCapacity);
 
         int count = 0;
@@ -101,9 +107,6 @@ public class MailSorter implements IMailSorter{
 
             MailItem mi = itemsToAdd.get(count);
             // System.out.println("Adding to the tube " + mi);
-
-
-
             try {
                 tube.addItem(mi);
                 mailPool.removeMailItem(mi);
@@ -114,7 +117,6 @@ public class MailSorter implements IMailSorter{
                 // System.out.println(this.fillingTube);
                 return true;
             }
-
             count++;
         }
         // System.out.println("==============================");

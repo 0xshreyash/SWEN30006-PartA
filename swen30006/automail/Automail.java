@@ -1,3 +1,11 @@
+/**
+ * Author: Shreyash Patodia
+ * Student Number: 767336
+ * Subject: SWEN30006 Software Modelling and Design.
+ * Project: Assignment 1 (Part A)
+ * Semester 1, 2017
+ * */
+
 package automail;
 
 import strategies.*;
