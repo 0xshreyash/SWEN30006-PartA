@@ -79,6 +79,7 @@ public class MailSorter implements IMailSorter{
             MailItem mi = itemsToAdd.get(count);
 
             try {
+                /* Remove item from the mail Pool */ 
                 this.mailPool.removeMailItem(mi);
                 tube.addItem(mi);
 
@@ -131,7 +132,7 @@ public class MailSorter implements IMailSorter{
         for(int item = 1; item <= numItems; item++) {
             for(int weight = 1; weight <= maxCapacity; weight++) {
 
-                /* index of startItem = (startItem - 1), index of item number x is x - 1 so,
+                /* (index of startItem) = (startItem - 1), index of item number x is x - 1 so,
                    we need to do startItem - 1 + item - 1 to get the index of the current
                    item.
                  */
@@ -152,18 +153,19 @@ public class MailSorter implements IMailSorter{
                             calculateDeliveryScore(currentItem, times[item][weight - currentItem.getSize()],
                                     locations[item - 1][weight - currentItem.getSize()]);
 
-                    /* If the alternate score is better than the score on the row above i.e. if
-                       the current item was not included then have value, time and location reflect that
-                       otherwise just copy values from the prev row
+                    /* If the alternate score is not better than the score on the row above i.e. if
+                       the current item is not to be included then have value, time and location reflect that
+                       otherwise just copy values from the prev row.
                      */
                     if(Double.compare(values[item - 1][weight], altScore) == 1) {
                         copyPrevValues(values, times, locations, item, weight);
                     }
                     else {
                         /* New time is current time + time to deliver item which is proportional to
-                           the floor of the item i.e. higher the floor more time added, + 1 to say that at least one
-                           second is need to deliver the item even if the floor is the same as the current floor.
-                           (+1 represents the change of state time for the robot in our simulation)
+                           the floor of the item i.e. farther the floor more time added, + 1 to say that
+                           at least one second is need to deliver the item even if the floor is the same
+                           as the current floor.(+1 represents the change of state time for the robot in
+                           our simulation)
                          */
                         times[item][weight] = times[item - 1][weight - currentItem.getSize()] +
                                 currentItem.getDestFloor() + 1;
@@ -197,8 +199,8 @@ public class MailSorter implements IMailSorter{
     }
 
     /**
-     * Function initalises the values, times and locations arrays with appropriate values
-     * so that they are ready for us.
+     * Function initalizes the values, times and locations arrays with appropriate values
+     * so that they are ready for use.
      * @param values the values 2D array to be filled during Knapsack.
      * @param times the times 2D array to be filled with approximate times.
      * @param locations the 2D array for the locations of the robot wrt the items in the bag.
@@ -221,6 +223,7 @@ public class MailSorter implements IMailSorter{
             Arrays.fill(itemLocationArray, Building.MAILROOM_LOCATION);
         }
 
+        /* Make base case Knapsack values 0 */
         for(int col = 0; col <= maxCapacity; col++) {
             values[0][col] = 0;
         }
@@ -310,8 +313,11 @@ public class MailSorter implements IMailSorter{
         int capacity = maxCapacity;
         int item = numItems;
         ArrayList<MailItem> itemsToAdd = new ArrayList<>();
-        while(capacity > 0 && item > 0) {
 
+
+        while(capacity > 0 && item > 0) {
+            /* If the value in this row is different from the row in Knapsack then the item corresponding to
+             * the current row must be included in tube. */
             if(Double.compare(values[item][capacity], values[item - 1][capacity]) != 0) {
                 MailItem mailItem = mailPool.getMailItem(startIndex + item - 1);
                 itemsToAdd.add(mailItem);
