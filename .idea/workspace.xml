@@ -2,11 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="778b5332-a33a-484f-b0e9-70017153acb6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/strategies/MailPool$FloorComparator.class" afterPath="$PROJECT_DIR$/bin/strategies/MailPool$FloorComparator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/strategies/MailPool.class" afterPath="$PROJECT_DIR$/bin/strategies/MailPool.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/strategies/MailSorter.class" afterPath="$PROJECT_DIR$/bin/strategies/MailSorter.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swen30006/strategies/MailPool.java" afterPath="$PROJECT_DIR$/swen30006/strategies/MailPool.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swen30006/strategies/MailSorter.java" afterPath="$PROJECT_DIR$/swen30006/strategies/MailSorter.java" />
     </list>
     <ignored path="Part A.iws" />
@@ -32,10 +27,10 @@
       <file leaf-file-name="MailSorter.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/swen30006/strategies/MailSorter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-233">
-              <caret line="50" column="16" selection-start-line="50" selection-start-column="16" selection-end-line="50" selection-end-column="16" />
+            <state relative-caret-position="-334">
+              <caret line="105" column="89" selection-start-line="105" selection-start-column="89" selection-end-line="105" selection-end-column="89" />
               <folding>
-                <element signature="e#0#15939#0" expanded="true" />
+                <element signature="e#0#16471#0" expanded="true" />
                 <element signature="imports" expanded="true" />
               </folding>
             </state>
@@ -105,7 +100,7 @@
       <file leaf-file-name="SimpleMailSorter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/swen30006/strategies/SimpleMailSorter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
+            <state relative-caret-position="-160">
               <caret line="9" column="2" selection-start-line="9" selection-start-column="2" selection-end-line="9" selection-end-column="2" />
               <folding />
             </state>
@@ -172,8 +167,8 @@
         <option value="$PROJECT_DIR$/swen30006/automail/Robot.java" />
         <option value="$PROJECT_DIR$/swen30006/automail/Automail.java" />
         <option value="$PROJECT_DIR$/swen30006/strategies/MailPool.java" />
-        <option value="$PROJECT_DIR$/swen30006/strategies/MailSorter.java" />
         <option value="$PROJECT_DIR$/swen30006/automail/Building.java" />
+        <option value="$PROJECT_DIR$/swen30006/strategies/MailSorter.java" />
       </list>
     </option>
   </component>
@@ -233,7 +228,7 @@
       </extension>
       <option name="MAIN_CLASS_NAME" value="automail.Simulation" />
       <option name="VM_PARAMETERS" value="" />
-      <option name="PROGRAM_PARAMETERS" value="30005" />
+      <option name="PROGRAM_PARAMETERS" value="30006" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
@@ -765,12 +760,12 @@
       <workItem from="1489663113339" duration="42000" />
       <workItem from="1489672152219" duration="11931000" />
       <workItem from="1489823162471" duration="8768000" />
-      <workItem from="1489918916833" duration="28177000" />
+      <workItem from="1489918916833" duration="29106000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="138318000" />
+    <option name="totallyTimeSpent" value="139247000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1200" extended-state="0" />
@@ -784,7 +779,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="1.0" sideWeight="0.1482966" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32209405" sideWeight="0.8517034" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33717835" sideWeight="0.8517034" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -855,7 +850,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#15939#0" expanded="true" />
+            <element signature="e#0#16471#0" expanded="true" />
             <element signature="imports" expanded="true" />
           </folding>
         </state>
@@ -955,7 +950,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#15939#0" expanded="true" />
+            <element signature="e#0#16471#0" expanded="true" />
             <element signature="imports" expanded="true" />
           </folding>
         </state>
@@ -1230,24 +1225,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/swen30006/strategies/SimpleMailSorter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="9" column="2" selection-start-line="9" selection-start-column="2" selection-end-line="9" selection-end-column="2" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/swen30006/automail/Automail.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="750">
-          <caret line="30" column="8" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="8" />
-          <folding>
-            <element signature="e#0#1014#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/swen30006/automail/Simulation.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -1283,12 +1260,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/swen30006/automail/Automail.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="750">
+          <caret line="30" column="8" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#1014#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swen30006/strategies/SimpleMailSorter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-160">
+          <caret line="9" column="2" selection-start-line="9" selection-start-column="2" selection-end-line="9" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/swen30006/strategies/MailSorter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-233">
-          <caret line="50" column="16" selection-start-line="50" selection-start-column="16" selection-end-line="50" selection-end-column="16" />
+        <state relative-caret-position="-334">
+          <caret line="105" column="89" selection-start-line="105" selection-start-column="89" selection-end-line="105" selection-end-column="89" />
           <folding>
-            <element signature="e#0#15939#0" expanded="true" />
+            <element signature="e#0#16471#0" expanded="true" />
             <element signature="imports" expanded="true" />
           </folding>
         </state>

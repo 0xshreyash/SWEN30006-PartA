@@ -73,7 +73,6 @@ public class MailSorter implements IMailSorter{
 
         int count = 0;
 
-        // Get rid of the try catch block. Needs to be gotten rid of. !!!!!!
         /* Adding items to the tube */
         while(count < itemsToAdd.size()) {
 
@@ -99,10 +98,12 @@ public class MailSorter implements IMailSorter{
     }
 
     /** This function calculates the performs Knapsack algorithm for the items from startItem
-     *  (index: startIndex - 1) to the last item. It finds the best value based on the
+     *  (index: startItem - 1) to the last item. It finds the best value based on the
      *  calculateDeliveryScore function.
      *  I used numbers of the items since that is conventional when doing Knapsack since 0th
      *  rows and columns are occupied by the base cases.
+     *  ALL + 1, -1 are going to remain the same, and will not depend on the program logic so
+     *  they are not made constants, as making a constant called ONE does not make sense.
      * @param startItem the number (not index) of the start item
      * @param lastItem the number (not index) of the last item
      * @param maxCapacity the max weight that the knapsack can hold
@@ -130,13 +131,13 @@ public class MailSorter implements IMailSorter{
         for(int item = 1; item <= numItems; item++) {
             for(int weight = 1; weight <= maxCapacity; weight++) {
 
-                /* index of startItem = (startItem - 1), index of item number 1 is 0 so,
-                   we need to add startItem - 1 + item - 1 to get the index of the current
+                /* index of startItem = (startItem - 1), index of item number x is x - 1 so,
+                   we need to do startItem - 1 + item - 1 to get the index of the current
                    item.
                  */
                 MailItem currentItem = this.mailPool.getMailItem((startItem - 1) + (item - 1));
 
-                /* If the new item can't fit into the weight just use the value from the top row */
+                /* If the new item can't fit into the weight just use the value from the row above */
                 if(currentItem.getSize() > weight) {
 
                     values[item][weight] = values[item - 1][weight];
@@ -234,8 +235,9 @@ public class MailSorter implements IMailSorter{
 
     /** The mail sorter runs knapsack twice, once for the Mailroom floor and above and once for all floors below
      *  in this way the complexity of the program is reduced whenever the mailroom is not on the top or bottom
-     *  floor and allows  assertion of the fact that the robot should not be crossing the mailroom floor without
-     *  filling his knapsack.
+     *  floor and allows assertion of the fact that the robot should not be crossing the mailroom floor without
+     *  filling his knapsack. (Lower complexity since: a^2 + b^2 <= (a + b)^2 ). I then choose the floor set
+     *  that represents the highest value and then find the items that we have to pick from the floor set.
      * @param indexDivider The location of the first item with floor >= mailroom floor in sorted mailPool.
      * @param totalNumItems Total number of items in the pool.
      * @param maxCapacity The max weight the robot can carry at once.
@@ -246,8 +248,11 @@ public class MailSorter implements IMailSorter{
 
         /* values for the knapsack for floor >= referenceFloor */
         double valuesTop[][];
+        /* values for the knapsack for floor < referenceFloor */
         double valuesBottom[][];
+
         int startIndex = 0;
+        /* The array that will store the chosen values */
         double values[][];
 
         /* indexDivider = -1 means that there are no items with floor >= mailRoom floor */
@@ -260,12 +265,16 @@ public class MailSorter implements IMailSorter{
 
             /* Find the highest value for to top knapsack */
             /* length - 1 since we want the value at the end i.e. the value at the end of knapsack */
+            /* Last row */
             double [] lastTopRow = valuesTop[valuesTop.length - 1];
+            /* Last value */
             double lastTopValue = lastTopRow[lastTopRow.length - 1];
 
             /* Find the highest value for the bottom knapsack */
             /* length - 1 since we want the value at the end i.e. the value at the end of knapsack */
+            /* Last row */
             double [] lastBottomRow = valuesBottom[valuesBottom.length - 1];
+            /* Last value */
             double lastBottomValue = lastBottomRow[lastBottomRow.length - 1];
 
             /* Take the top floors if they have higher value else take the bottom floors */
@@ -278,7 +287,7 @@ public class MailSorter implements IMailSorter{
             }
         }
         else {
-            /* If index divider is -1 then just Knapsakc over the whole mail pool */
+            /* If index divider is -1 then just Knapsack over the whole mail pool */
             values = Knapsack(1, totalNumItems, maxCapacity);
         }
 
