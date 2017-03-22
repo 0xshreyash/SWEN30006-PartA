@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 
 /**
+ * NO FUNCTIONS ARE OVER 30 LOC ALTHOUGH SOME HAVE LOTS OF COMMENTING MAKING THEM LOOK LONG.
  * A MailSorter class that implements Knapsack in order to select the maximum value items that
  * the robot can deliver at each trip. The class implements 2 separate knapsacks for the floors
  * that are below the mail room floors and the rest of the floors respectively. I did this
@@ -114,7 +115,7 @@ public class MailSorter implements IMailSorter{
      * @param maxCapacity the max weight that the knapsack can hold
      * @return a 2D array of values in the Knapsack.
      */
-     /* Function looks long due to commenting
+     /* Function looks long due to commenting that explains each step.
         25 LOC */
     private double[][] Knapsack(int startItem, int lastItem, int maxCapacity) {
 
@@ -128,8 +129,7 @@ public class MailSorter implements IMailSorter{
 
         /* Initializing the 0th row & 0th column of values with 0, times with the current time,
            locations with the mailRoom location, since that is the current start of the robot
-           when we start selecting the items to be put into the knapsack.
-         */
+           when we start selecting the items to be put into the knapsack. */
         initialiseKnapsackArrays(values, times, locations, maxCapacity, numItems);
 
         /* Running knapsack */
@@ -138,8 +138,7 @@ public class MailSorter implements IMailSorter{
 
                 /* (index of startItem) = (startItem - 1), index of item number x is x - 1 so,
                    we need to do startItem - 1 + item - 1 to get the index of the current
-                   item.
-                 */
+                   item. */
                 MailItem currentItem = this.mailPool.getMailItem((startItem - 1) + (item - 1));
 
                 /* If the new item can't fit into the weight just use the value from the row above */
@@ -151,16 +150,14 @@ public class MailSorter implements IMailSorter{
 
                     /* If item can be fit into the bag, then calculate the value for that item using
                        calculateDeliveryScore and then add to the best value for the remaining space.
-                       This gives us the alternate score
-                     */
+                       This gives us the alternate score. */
                     double altScore = values[item - 1][weight - currentItem.getSize()] +
                             calculateDeliveryScore(currentItem, times[item][weight - currentItem.getSize()],
                                     locations[item - 1][weight - currentItem.getSize()]);
 
                     /* If the alternate score is not better than the score on the row above i.e. if
                        the current item is not to be included then have value, time and location reflect that
-                       otherwise just copy values from the prev row.
-                     */
+                       otherwise just copy values from the prev row. */
                     if(Double.compare(values[item - 1][weight], altScore) == 1) {
                         copyPrevValues(values, times, locations, item, weight);
                     }
@@ -169,8 +166,7 @@ public class MailSorter implements IMailSorter{
                            the floor of the item i.e. farther the floor more time added, + 1 to say that
                            at least one second is need to deliver the item even if the floor is the same
                            as the current floor.(+1 represents the change of state time for the robot in
-                           our simulation)
-                         */
+                           our simulation) */
                         times[item][weight] = times[item - 1][weight - currentItem.getSize()] +
                                 currentItem.getDestFloor() + 1;
 
