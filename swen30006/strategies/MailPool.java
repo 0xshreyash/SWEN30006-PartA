@@ -50,6 +50,8 @@ public class MailPool implements IMailPool {
 
     }
 
+    /**************************************************************************************************************/
+
     /**
      * Takes a new mail item as parameter and adds it to the ArrayList of already existing items.
      * @param mailItem the mail item being added to the pool.
@@ -63,6 +65,8 @@ public class MailPool implements IMailPool {
         return;
     }
 
+    /**************************************************************************************************************/
+
     /**
      * Finds the length of the mailItems ArrayList.
      * @return current length of the mailItems ArrayList.
@@ -72,6 +76,8 @@ public class MailPool implements IMailPool {
 
         return mailItems.size();
     }
+
+    /**************************************************************************************************************/
 
     /**
      * FUNCTION IS USED WHEN ITERATING THROUGH THE ARRAYLIST ONCE IT IS SORTED.
@@ -87,6 +93,8 @@ public class MailPool implements IMailPool {
         return this.mailItems.get(index);
     }
 
+    /**************************************************************************************************************/
+
     /**
      * Checks if the pool is empty
      * @return boolean value indicating whether the pool is empty.
@@ -96,6 +104,8 @@ public class MailPool implements IMailPool {
 
         return mailItems.isEmpty();
     }
+
+    /**************************************************************************************************************/
 
     /**
      * Removes the mail item provided as parameter from the mail Pool.
@@ -108,6 +118,8 @@ public class MailPool implements IMailPool {
         return;
     }
 
+    /**************************************************************************************************************/
+
     /**
      * Sorts the list of mail items by their floor (in ascending order).
      */
@@ -119,6 +131,8 @@ public class MailPool implements IMailPool {
         //printPool();
         return;
     }
+
+    /**************************************************************************************************************/
 
     /**
      * Prints the whole list of mailItems, used mainly for debugging.
@@ -133,6 +147,8 @@ public class MailPool implements IMailPool {
         }
         System.out.println("==============================");
     }
+
+    /**************************************************************************************************************/
 
     /**
      * Sorts the list, and finds the index of the first item with floor greater
@@ -164,6 +180,8 @@ public class MailPool implements IMailPool {
         }
         return -1;
     }
+
+    /**************************************************************************************************************/
 
     /**
      * Comparator that is used in order to sort the floor, so that we can sort the

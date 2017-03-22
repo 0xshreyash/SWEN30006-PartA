@@ -43,6 +43,8 @@ public class MailSorter implements IMailSorter{
         this.mailPool = mailPool;
     }
 
+    /**************************************************************************************************************/
+
     /**
      * Function that is called in order to fill the storage tube of the robot in with the
      * highest priority items so that the score can be minimized.
@@ -98,6 +100,8 @@ public class MailSorter implements IMailSorter{
         return false;
     }
 
+    /**************************************************************************************************************/
+
     /** This function calculates the performs Knapsack algorithm for the items from startItem
      *  (index: startItem - 1) to the last item. It finds the best value based on the
      *  calculateDeliveryScore function.
@@ -111,7 +115,7 @@ public class MailSorter implements IMailSorter{
      * @return a 2D array of values in the Knapsack.
      */
      /* Function looks long due to commenting
-        25LOC */
+        25 LOC */
     private double[][] Knapsack(int startItem, int lastItem, int maxCapacity) {
 
         /* + 1 to have the number of items */
@@ -180,6 +184,8 @@ public class MailSorter implements IMailSorter{
         return values;
     }
 
+    /**************************************************************************************************************/
+
     /**
      * Simple function copies the items on the row above to the row below in the values,
      * times and locations arrays in order to signify that the current item was not selected
@@ -197,6 +203,8 @@ public class MailSorter implements IMailSorter{
         locations[item][weight] = locations[item - 1][weight];
 
     }
+
+    /**************************************************************************************************************/
 
     /**
      * Function initalizes the values, times and locations arrays with appropriate values
@@ -235,6 +243,8 @@ public class MailSorter implements IMailSorter{
         return;
 
     }
+
+    /**************************************************************************************************************/
 
     /** The mail sorter runs knapsack twice, once for the Mailroom floor and above and once for all floors below
      *  in this way the complexity of the program is reduced whenever the mailroom is not on the top or bottom
@@ -299,6 +309,8 @@ public class MailSorter implements IMailSorter{
 
     }
 
+    /**************************************************************************************************************/
+
     /**
      * Function determines which items were selected during Knapsack by comparing the value in a specified position
      * with the value in the row above, if they are different it means that the item in the current row was used
@@ -329,6 +341,8 @@ public class MailSorter implements IMailSorter{
         return itemsToAdd;
 
     }
+
+    /**************************************************************************************************************/
 
     /**
      * Function takes the a mailItem, the current time in the simulation (an overestimate) and a reference floor i.e.
