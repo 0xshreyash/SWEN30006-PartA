@@ -22,7 +22,7 @@ import java.util.Arrays;
  * A MailSorter class that implements Knapsack in order to select the maximum value items that
  * the robot can deliver at each trip. The class implements 2 separate knapsacks for the floors
  * that are below the mail room floors and the rest of the floors respectively. I did this
- * because the it does not make sense for us to cross the mail room floor without actually
+ * because it does not make sense for us to cross the mail room floor without actually
  * stopping at it and collecting more items. Also, having two different knapsacks means it takes
  * less time to run since a^2 + b^2 <= (a + b)^2
  */
@@ -46,7 +46,7 @@ public class MailSorter implements IMailSorter{
     /**
      * Function that is called in order to fill the storage tube of the robot in with the
      * highest priority items so that the score can be minimized.
-     * @param tube the storage tube to be filled by the sorting algorithm.
+     * @param tube the storage tube to be filled by the selection algorithm.
      */
     /* 18 LOC */
     @Override
@@ -79,7 +79,7 @@ public class MailSorter implements IMailSorter{
             MailItem mi = itemsToAdd.get(count);
 
             try {
-                /* Remove item from the mail Pool */ 
+                /* Remove item from the mail Pool */
                 this.mailPool.removeMailItem(mi);
                 tube.addItem(mi);
 
@@ -110,8 +110,8 @@ public class MailSorter implements IMailSorter{
      * @param maxCapacity the max weight that the knapsack can hold
      * @return a 2D array of values in the Knapsack.
      */
-     /* Function looks long due to lots of commenting.
-        28 LOC */
+     /* Function looks long due to commenting
+        25LOC */
     private double[][] Knapsack(int startItem, int lastItem, int maxCapacity) {
 
         /* + 1 to have the number of items */
@@ -376,3 +376,5 @@ public class MailSorter implements IMailSorter{
         return score;
     }
 }
+
+/*******************************************************************************************************************/
