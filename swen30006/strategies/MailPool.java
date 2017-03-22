@@ -54,6 +54,7 @@ public class MailPool implements IMailPool {
      * Takes a new mail item as parameter and adds it to the ArrayList of already existing items.
      * @param mailItem the mail item being added to the pool.
      */
+    /* 3 LOC */
     @Override
     public void addToPool(MailItem mailItem) {
 
@@ -66,6 +67,7 @@ public class MailPool implements IMailPool {
      * Finds the length of the mailItems ArrayList.
      * @return current length of the mailItems ArrayList.
      */
+    /* 1 LOC */
     public int getLength() {
 
         return mailItems.size();
@@ -79,6 +81,7 @@ public class MailPool implements IMailPool {
      * @param index the index of the mail item to find from the pool.
      * @return the mail item at the given index.
      */
+    /* 1 LOC */
     public MailItem getMailItem(int index) {
 
         return this.mailItems.get(index);
@@ -88,6 +91,7 @@ public class MailPool implements IMailPool {
      * Checks if the pool is empty
      * @return boolean value indicating whether the pool is empty.
      */
+    /* 1 LOC */
     public boolean isEmptyPool() {
 
         return mailItems.isEmpty();
@@ -97,6 +101,7 @@ public class MailPool implements IMailPool {
      * Removes the mail item provided as parameter from the mail Pool.
      * @param mailItem the mail item to be removed.
      */
+    /* 2 LOC */
     public void removeMailItem(MailItem mailItem) {
 
         this.mailItems.remove(mailItem);
@@ -106,6 +111,7 @@ public class MailPool implements IMailPool {
     /**
      * Sorts the list of mail items by their floor (in ascending order).
      */
+    /* 4 LOC */
     private void sortByFloor() {
 
         FloorComparator comparator = new FloorComparator();
@@ -117,6 +123,7 @@ public class MailPool implements IMailPool {
     /**
      * Prints the whole list of mailItems, used mainly for debugging.
      */
+    /* 6 LOC */
     public void printPool() {
         System.out.println("==============================");
         System.out.println("Result of sorting");
@@ -137,6 +144,7 @@ public class MailPool implements IMailPool {
      * @return index of the first item with floor greater than or equal to the
      * parameter floor.  -1 otherwise.
      */
+    /* 7 LOC */
     public int getIndexForFloor(int referenceFloor) {
 
         /* Calling sort here because this is the time we would need the items in
@@ -172,6 +180,7 @@ public class MailPool implements IMailPool {
          * are equal (since itemTwo will have a later arrival time so it makes sense for it
          * to be after itemOne, and Java will implicitly do this).
          */
+        /* 7 LOC */
         public int compare(MailItem itemOne, MailItem itemTwo)
         {
             int floorOne = itemOne.getDestFloor();

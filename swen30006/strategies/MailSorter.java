@@ -19,19 +19,19 @@ import java.util.Arrays;
 
 
 /**
- * A MailSorter class that implements Knapsack in order to find the maximum value items that
+ * A MailSorter class that implements Knapsack in order to select the maximum value items that
  * the robot can deliver at each trip. The class implements 2 separate knapsacks for the floors
  * that are below the mail room floors and the rest of the floors respectively. I did this
  * because the it does not make sense for us to cross the mail room floor without actually
- * stopping at it and collecting more items.
+ * stopping at it and collecting more items. Also, having two different knapsacks means it takes
+ * less time to run since a^2 + b^2 <= (a + b)^2
  */
 public class MailSorter implements IMailSorter{
 
     /**
-     * The pool of the mail items
+     * The pool containing the mail items
      * */
     private MailPool mailPool;
-
 
     /**
      * Constructor that tells the sorter which mailPool it is to sort.
@@ -52,8 +52,6 @@ public class MailSorter implements IMailSorter{
     @Override
     public boolean fillStorageTube(StorageTube tube) {
 
-        // System.out.println("Hello! Filling tube at: " + Clock.Time());
-
         /* Capacity of the tube */
         int maxCapacity = tube.MAXIMUM_CAPACITY;
 
@@ -65,8 +63,8 @@ public class MailSorter implements IMailSorter{
 
         /* The index of the first item with floor greater than or equal to the referenceFloor
          * getIndexForFloor sorts the mailItems so that we can iterate through the mailItems
-         * in an ordered manner, also keeps the control of the mailItems to the pool and not
-         * to the sorter.
+         * in an ordered manner (thus, the mailPool provides the organisation), also keeps the
+         * control of the mailItems to the pool and not to the sorter.
          */
         int indexDivider = this.mailPool.getIndexForFloor(referenceFloor);
 
@@ -246,6 +244,7 @@ public class MailSorter implements IMailSorter{
     /* 18 LOC */
     private ArrayList<MailItem> chooseKnapsackValues( int indexDivider, int totalNumItems, int maxCapacity) {
 
+        /* values for the knapsack for floor >= referenceFloor */
         double valuesTop[][];
         double valuesBottom[][];
         int startIndex = 0;
