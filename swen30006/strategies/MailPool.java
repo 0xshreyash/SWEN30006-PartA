@@ -26,6 +26,13 @@ import java.util.Comparator;
  * floor when the robot comes to take some mail to deliver. The mail is not sorted continuously
  * since sorting when every item comes in is more work than required and the only time we need to
  * sort is when the robot comes in to take the items (sorting is called in getIndexForFloor function).
+ * Meaning that the robot when selecting items in the sorted will find the items organised by floor
+ * and arrival time i.e. items with less floor (and within a floor sorted by arrival time). Sorting
+ * by time is implicit due to how to comparator in java works. Also the sorting function is private
+ * since the organisation is the MailPool's goal and thus, is called before any manipulation of the
+ * mailItems is done. If need be sorting could be made public and called from MailSorter but for the
+ * objective of the project I feel like the sorting should be done in the pool and thus, there is no
+ * need for the MailSorter to be able to sort the mailItems.
  */
 public class MailPool implements IMailPool {
 
@@ -65,7 +72,7 @@ public class MailPool implements IMailPool {
     }
 
     /**
-     * FUNCTION IS USED TO ITERATE THROUGH THE ARRAYLIST ONCE IT IS SORTED.
+     * FUNCTION IS USED WHEN ITERATING THROUGH THE ARRAYLIST ONCE IT IS SORTED.
      * Allows user to get the mailItem at a certain index. In this way we can iterate through
      * the mailItems without having to pass all the items to the MailSorter. (which is not in the best
      * interests of abstraction).
@@ -122,7 +129,10 @@ public class MailPool implements IMailPool {
 
     /**
      * Sorts the list, and finds the index of the first item with floor greater
-     * than or equal to the floor in the parameter.
+     * than or equal to the floor in the parameter. In this way sorting is done
+     * only when the robot comes to take the items which is <= to the number
+     * of items that come in, so the performance in comparison to sorting as
+     * items come is generally going to be better.
      * @param referenceFloor the floor that we need to find the first item of.
      * @return index of the first item with floor greater than or equal to the
      * parameter floor.  -1 otherwise.
@@ -158,9 +168,9 @@ public class MailPool implements IMailPool {
          * @param itemOne the first item of the comparison
          * @param itemTwo the second item of the comparison
          * @return -1 if floor of itemOne is less than floor of itemTwo, 1
-         * if the floor of itemOne is greater than floor for itemTwo, or if the floors
+         * if the floor of itemOne is greater than floor for itemTwo, 0 if the floors
          * are equal (since itemTwo will have a later arrival time so it makes sense for it
-         * to be after itemOne).
+         * to be after itemOne, and Java will implicitly do this).
          */
         public int compare(MailItem itemOne, MailItem itemTwo)
         {
