@@ -86,7 +86,7 @@ public class Simulation {
                 priority_weight = 2;
                 break;
         }
-        System.out.println("Actual Time :" + Clock.Time());
+        //System.out.println("Actual Time :" + Clock.Time());
         return Math.pow(Clock.Time() - deliveryItem.getArrivalTime(),penalty)*priority_weight;
     }
 

@@ -169,7 +169,10 @@ public class MailPool implements IMailPool {
             if (floorOne < floorTwo) {
                 return -1;
             }
-            return 1;
+            else if(floorOne > floorTwo) {
+                return 1;
+            }
+            return 0;
         }
     }
 }
