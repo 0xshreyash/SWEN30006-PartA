@@ -21,7 +21,7 @@ import java.util.Arrays;
 /**
  * A MailSorter class that implements Knapsack in order to find the maximum value items that
  * the robot can deliver at each trip. The class implements 2 separate knapsacks for the floors
- * that are below the mail room floors and the rest of the floors repsectively. I did this
+ * that are below the mail room floors and the rest of the floors respectively. I did this
  * because the it does not make sense for us to cross the mail room floor without actually
  * stopping at it and collecting more items.
  */
@@ -157,7 +157,7 @@ public class MailSorter implements IMailSorter{
                        the current item was not included then have value, time and location reflect that
                        otherwise just copy values from the prev row
                      */
-                    if(values[item - 1][weight] >= altScore) {
+                    if(Double.compare(values[item - 1][weight], altScore) == 1) {
                         copyPrevValues(values, times, locations, item, weight);
                     }
                     else {
@@ -168,7 +168,9 @@ public class MailSorter implements IMailSorter{
                          */
                         times[item][weight] = times[item - 1][weight - currentItem.getSize()] +
                                 currentItem.getDestFloor() + 1;
+
                         values[item][weight] = altScore;
+                        /* Location is updated to the currentFloor */
                         locations[item][weight] = currentItem.getDestFloor();
                     }
                 }
@@ -177,6 +179,15 @@ public class MailSorter implements IMailSorter{
         return values;
     }
 
+    /**
+     * Simple function copies the items on the row above to the row below in the values,
+     * times and locations arrays in order to signify that the current item was not selected
+     * @param values the 2D array of values in the the Knapsack.
+     * @param times the 2D array of times in the Knapsack.
+     * @param locations the 2D array of locations of the robot in knapsack.
+     * @param item the item number in question.
+     * @param weight the weight i.e. column in question.
+     */
     private void copyPrevValues(double values[][], int times[][],
                                int locations[][], int item, int weight) {
 
@@ -185,14 +196,29 @@ public class MailSorter implements IMailSorter{
         locations[item][weight] = locations[item - 1][weight];
 
     }
+
+    /**
+     * Function initalises the values, times and locations arrays with appropriate values
+     * so that they are ready for us.
+     * @param values the values 2D array to be filled during Knapsack.
+     * @param times the times 2D array to be filled with approximate times.
+     * @param locations the 2D array for the locations of the robot wrt the items in the bag.
+     * @param maxCapacity the max capacity of the knapsack.
+     * @param numItems the number of items in the mail Pool.
+     */
+    /* 10 LOC */
     private void initialiseKnapsackArrays(double values[][], int times[][],
                                           int locations[][], int maxCapacity, int numItems) {
 
         for(int itemTimeRow[] : times) {
+
+            /* Fill with the current time */
             Arrays.fill(itemTimeRow, Clock.Time());
         }
 
         for(int itemLocationArray[] : locations) {
+
+            /* Fill with MAILROOM location */
             Arrays.fill(itemLocationArray, Building.MAILROOM_LOCATION);
         }
 
@@ -217,6 +243,7 @@ public class MailSorter implements IMailSorter{
      * @param maxCapacity The max weight the robot can carry at once.
      * @return The arrayList of mail items to be added to the tube.
      */
+    /* 18 LOC */
     private ArrayList<MailItem> chooseKnapsackValues( int indexDivider, int totalNumItems, int maxCapacity) {
 
         double valuesTop[][];
@@ -252,6 +279,7 @@ public class MailSorter implements IMailSorter{
             }
         }
         else {
+            /* If index divider is -1 then just Knapsakc over the whole mail pool */
             values = Knapsack(1, totalNumItems, maxCapacity);
         }
 
@@ -260,13 +288,24 @@ public class MailSorter implements IMailSorter{
 
     }
 
+    /**
+     * Function determines which items were selected during Knapsack by comparing the value in a specified position
+     * with the value in the row above, if they are different it means that the item in the current row was used
+     * in Knapsack, in this way we determine what items are in the bag.
+     * @param values the 2D array of knapsack values.
+     * @param startIndex the start index of the item (index and not number)
+     * @param numItems the num of items in the mail pool.
+     * @param maxCapacity the max capacity of the knapsack.
+     * @return An ArrayList of the the items to be added to the tube.
+     */
+    
     private ArrayList<MailItem> determineItems(double [][]values, int startIndex, int numItems, int maxCapacity) {
         int capacity = maxCapacity;
         int item = numItems;
         ArrayList<MailItem> itemsToAdd = new ArrayList<>();
         while(capacity > 0 && item > 0) {
-            //System.out.println("item = " + item + " capacity = " + capacity);
-            if(values[item][capacity] != values[item - 1][capacity]) {
+
+            if(Double.compare(values[item][capacity], values[item - 1][capacity]) != 0) {
                 MailItem mailItem = mailPool.getMailItem(startIndex + item - 1);
                 itemsToAdd.add(mailItem);
                 capacity = capacity -  mailItem.getSize();
@@ -289,7 +328,7 @@ public class MailSorter implements IMailSorter{
      * @param referenceFloor the floor the robot is at when considering the deliveryItem.
      * @return the score of the item, higher means the item is more likely to be selected.
      */
-    private double calculateDeliveryScore(MailItem deliveryItem, int simulationTime, int referenceFloor) {
+    private static double calculateDeliveryScore(MailItem deliveryItem, int simulationTime, int referenceFloor) {
 
         // Penalty for longer delivery times
         final double penalty = 1.2;
@@ -311,13 +350,15 @@ public class MailSorter implements IMailSorter{
                 break;
         }
 
+        /* Higher score for more priority and earlier arrival time */
         double numerator = (simulationTime - deliveryItem.getArrivalTime() + Math.pow(priority_weight, 2));
 
+        /* Divide by the distance from the MailRoom, +1 so that denominator can never be zero */
         double denominator = (Math.abs(deliveryItem.getDestFloor() - referenceFloor) + 1);
 
+        /* Score is a function of the numerator, denominator, penalty and the priority */
         double score =  ((Math.pow(numerator, penalty)*(priority_weight))
                 /(Math.pow(denominator*penalty, penalty*penalty) - 1));
-        // System.out.println(score);
 
         return score;
     }

@@ -103,7 +103,7 @@ public class MailPool implements IMailPool {
 
         FloorComparator comparator = new FloorComparator();
         Collections.sort(this.mailItems, comparator);
-        printPool();
+        //printPool();
         return;
     }
 
@@ -139,7 +139,7 @@ public class MailPool implements IMailPool {
 
             if(mailItem.getDestFloor() >= referenceFloor)
             {
-                System.out.println("Divider is:" + this.mailItems.indexOf(mailItem));
+                //System.out.println("Divider is:" + this.mailItems.indexOf(mailItem));
                 return this.mailItems.indexOf(mailItem);
 
             }
