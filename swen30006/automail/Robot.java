@@ -66,8 +66,8 @@ public class Robot {
                 else{
                     /** Delivery complete, report this to the simulator! */
                     delivery.deliver(deliveryItem);
-                    System.out.println("The time is: " + Clock.Time());
-                    System.out.println("Now Delivering: " + deliveryItem);
+                    //System.out.println("The time is: " + Clock.Time());
+                    //System.out.println("Now Delivering: " + deliveryItem);
                     /** Check if there are more items in the tube*/
                     if(tube.isEmpty()){
                             current_state = RobotState.RETURNING;

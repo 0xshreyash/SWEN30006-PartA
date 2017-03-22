@@ -298,7 +298,6 @@ public class MailSorter implements IMailSorter{
      * @param maxCapacity the max capacity of the knapsack.
      * @return An ArrayList of the the items to be added to the tube.
      */
-    
     private ArrayList<MailItem> determineItems(double [][]values, int startIndex, int numItems, int maxCapacity) {
         int capacity = maxCapacity;
         int item = numItems;
