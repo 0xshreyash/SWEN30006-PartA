@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class Simulation {
 
     /** Constant for the mail generator */
-    private static final int MAIL_TO_CREATE = 50;
+    private static final int MAIL_TO_CREATE = 5000;
 
     private static ArrayList<MailItem> MAIL_DELIVERED;
     private static double total_score = 0;
